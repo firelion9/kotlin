@@ -1,0 +1,5 @@
+package foo
+
+fun baz() = bar()
+
+fun foo3() = cycled()

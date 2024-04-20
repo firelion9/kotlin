@@ -53,6 +53,11 @@ public class IncrementalK2LightTreeJvmJpsTestGenerated extends AbstractIncrement
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/addMemberTypeAlias/");
     }
 
+    @TestMetadata("addSimpleConflictingFunction")
+    public void testAddSimpleConflictingFunction() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/addSimpleConflictingFunction/");
+    }
+
     @TestMetadata("addTopLevelTypeAlias")
     public void testAddTopLevelTypeAlias() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/addTopLevelTypeAlias/");
@@ -392,6 +397,11 @@ public class IncrementalK2LightTreeJvmJpsTestGenerated extends AbstractIncrement
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/overloadInlined/");
     }
 
+    @TestMetadata("overloadReturnTypeChanged")
+    public void testOverloadReturnTypeChanged() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/overloadReturnTypeChanged/");
+    }
+
     @TestMetadata("packageConstantChanged")
     public void testPackageConstantChanged() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/packageConstantChanged/");
@@ -480,6 +490,11 @@ public class IncrementalK2LightTreeJvmJpsTestGenerated extends AbstractIncrement
     @TestMetadata("privateMethodSignatureChanged")
     public void testPrivateMethodSignatureChanged() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/privateMethodSignatureChanged/");
+    }
+
+    @TestMetadata("privateOverloadAdded")
+    public void testPrivateOverloadAdded() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/privateOverloadAdded/");
     }
 
     @TestMetadata("privateSecondaryConstructorAdded")
@@ -685,6 +700,11 @@ public class IncrementalK2LightTreeJvmJpsTestGenerated extends AbstractIncrement
     @TestMetadata("traitClassObjectConstantChanged")
     public void testTraitClassObjectConstantChanged() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/traitClassObjectConstantChanged/");
+    }
+
+    @TestMetadata("transitiveReturnType")
+    public void testTransitiveReturnType() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/transitiveReturnType/");
     }
 
     @TestMetadata("valAddCustomAccessor")

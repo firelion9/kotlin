@@ -1,0 +1,15 @@
+================ Step #1 =================
+
+Cleaning output files:
+  out/production/module/META-INF/module.kotlin_module
+  out/production/module/foo/A.class
+  out/production/module/foo/UseKt.class
+  out/production/module/foo/TransitiveUseKt.class
+End of files
+Compiling files:
+  src/A.kt
+  src/use.kt
+  src/transitiveUse.kt
+End of files
+Exit code: OK
+------------------------------------------
