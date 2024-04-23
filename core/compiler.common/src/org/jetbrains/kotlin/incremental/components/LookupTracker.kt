@@ -32,6 +32,14 @@ interface LookupTracker {
         name: String
     )
 
+    fun recordType(
+        filePath: String,
+        position: Position,
+        scopeFqName: String,
+        scopeKind: ScopeKind,
+        name: String
+    ) = record(filePath, position, TYPES_UNIVERSE_PREFIX + scopeFqName, scopeKind, name)
+
     fun clear()
 
     object DO_NOTHING : LookupTracker {
@@ -43,6 +51,10 @@ interface LookupTracker {
 
         override fun clear() {
         }
+    }
+
+    companion object {
+        const val TYPES_UNIVERSE_PREFIX: String = "type/"
     }
 }
 

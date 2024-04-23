@@ -261,6 +261,7 @@ open class IncrementalJvmCompilerRunner(
                     is ChangesEither.Unknown -> return CompilationMode.Rebuild(javaFilesChanges.reason)
                 }
                 dirtyFiles.addByDirtySymbols(affectedJavaSymbols)
+                dirtyFiles.addByDirtySymbols(affectedJavaSymbols.map { it.copy(scope = LookupTracker.TYPES_UNIVERSE_PREFIX + it.scope) })
             } else {
                 val rebuildReason = processChangedJava(changedFiles, caches)
                 if (rebuildReason != null) return CompilationMode.Rebuild(rebuildReason)
@@ -284,8 +285,8 @@ open class IncrementalJvmCompilerRunner(
     private fun ProgramSymbolSet.toChangeInfoList(): List<ChangeInfo> {
         val changes = mutableListOf<ChangeInfo>()
         classes.forEach { classId ->
-            // It's important to set `areSubclassesAffected = true` when we don't know
-            changes.add(ChangeInfo.SignatureChanged(classId.asSingleFqName(), areSubclassesAffected = true))
+            // It's important to set `areSubclassesAffected = true` and `isTypeAffected = true` when we don't know
+            changes.add(ChangeInfo.SignatureChanged(classId.asSingleFqName(), areSubclassesAffected = true, isTypeAffected = true))
         }
         classMembers.forEach { (classId, members) ->
             changes.add(ChangeInfo.MembersChanged(classId.asSingleFqName(), members))

@@ -152,7 +152,7 @@ abstract class AbstractIncrementalCache<ClassName>(
 
         for (removedClass in removedFqNames) {
             for (affectedClass in withSubtypes(removedClass, thisWithDependentCaches)) {
-                changesCollector.collectSignature(affectedClass, areSubclassesAffected = false)
+                changesCollector.collectSignature(affectedClass, areSubclassesAffected = false, isTypeAffected = true)
             }
         }
 

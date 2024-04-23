@@ -29,6 +29,7 @@ class ChangesCollector {
     private val changedParents = hashMapOf<FqName, MutableSet<FqName>>()
     private val changedMembers = hashMapOf<FqName, MutableSet<String>>()
     private val areSubclassesAffected = hashMapOf<FqName, Boolean>()
+    private val areTypesAffected = hashMapOf<FqName, Boolean>()
 
     //TODO for test only: ProtoData or ProtoBuf
     private val storage = hashMapOf<FqName, ProtoData>()
@@ -54,7 +55,7 @@ class ChangesCollector {
         }
 
         for ((fqName, areSubclassesAffected) in areSubclassesAffected) {
-            changes.add(ChangeInfo.SignatureChanged(fqName, areSubclassesAffected))
+            changes.add(ChangeInfo.SignatureChanged(fqName, areSubclassesAffected, areTypesAffected[fqName] == true))
         }
 
         for ((fqName, changedParents) in changedParents) {
@@ -133,20 +134,20 @@ class ChangesCollector {
                         val fqName = oldData.nameResolver.getClassId(oldData.proto.fqName).asSingleFqName()
                         val diff = DifferenceCalculatorForClass(oldData, newData).difference()
                         if (diff.isClassAffected) {
-                            collectSignature(oldData, diff.areSubclassesAffected)
+                            collectSignature(oldData, diff.areSubclassesAffected, diff.isTypeAffected)
                         }
                         collectChangedMembers(fqName, diff.changedMembersNames)
                         addChangedParents(fqName, diff.changedSupertypes)
                     }
                     is PackagePartProtoData -> {
-                        collectSignature(oldData, areSubclassesAffected = true)
+                        collectSignature(oldData, areSubclassesAffected = true, isTypeAffected = false)
                     }
                 }
             }
             is PackagePartProtoData -> {
                 when (newData) {
                     is ClassProtoData -> {
-                        collectSignature(newData, areSubclassesAffected = false)
+                        collectSignature(newData, areSubclassesAffected = false, isTypeAffected = false)
                     }
                     is PackagePartProtoData -> {
                         val diff = DifferenceCalculatorForPackageFacade(oldData, newData).difference()
@@ -191,7 +192,7 @@ class ChangesCollector {
                 memberNames.forEach { this@ChangesCollector.collectChangedMember(classFqName, it) }
             }
 
-            collectSignature(classFqName, areSubclassesAffected = true)
+            collectSignature(classFqName, areSubclassesAffected = true, isTypeAffected = true)
         }
 
         if (isRemoved || isAdded) {
@@ -224,13 +225,15 @@ class ChangesCollector {
         }
     }
 
-    private fun collectSignature(classData: ClassProtoData, areSubclassesAffected: Boolean) {
+    private fun collectSignature(classData: ClassProtoData, areSubclassesAffected: Boolean, isTypeAffected: Boolean) {
         val fqName = classData.nameResolver.getClassId(classData.proto.fqName).asSingleFqName()
-        collectSignature(fqName, areSubclassesAffected)
+        collectSignature(fqName, areSubclassesAffected, isTypeAffected)
     }
 
-    fun collectSignature(fqName: FqName, areSubclassesAffected: Boolean) {
-        val prevValue = this.areSubclassesAffected[fqName] ?: false
-        this.areSubclassesAffected[fqName] = prevValue || areSubclassesAffected
+    fun collectSignature(fqName: FqName, areSubclassesAffected: Boolean, isTypeAffected: Boolean) {
+        val prevSubclassesValue = this.areSubclassesAffected[fqName] ?: false
+        val prevTypeValue = this.areTypesAffected[fqName] ?: false
+        this.areSubclassesAffected[fqName] = prevSubclassesValue || areSubclassesAffected
+        this.areTypesAffected[fqName] = prevTypeValue || isTypeAffected
     }
 }

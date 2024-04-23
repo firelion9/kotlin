@@ -486,7 +486,7 @@ private fun Candidate.prepareExpectedType(
                         callInfo.callSite.source,
                         callInfo.containingFile.source
                     )
-                    lookupTracker.recordClassLikeLookup(classId, callInfo.callSite.source, callInfo.containingFile.source)
+                    lookupTracker.recordClassLikeLookup(classId, callInfo.callSite.source, callInfo.containingFile.source, isTypeLookup = false)
                 }
             }
         }

@@ -717,6 +717,11 @@ public class IncrementalK1JvmJpsTestGenerated extends AbstractIncrementalK1JvmJp
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/addFileWithFunctionOverload/");
     }
 
+    @TestMetadata("addGenericConflictingFunction")
+    public void testAddGenericConflictingFunction() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/addGenericConflictingFunction/");
+    }
+
     @TestMetadata("addMemberTypeAlias")
     public void testAddMemberTypeAlias() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/addMemberTypeAlias/");
@@ -1381,9 +1386,9 @@ public class IncrementalK1JvmJpsTestGenerated extends AbstractIncrementalK1JvmJp
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/traitClassObjectConstantChanged/");
     }
 
-    @TestMetadata("transitiveReturnType")
-    public void testTransitiveReturnType() {
-      runTest("jps/jps-plugin/testData/incremental/pureKotlin/transitiveReturnType/");
+    @TestMetadata("transitiveArgumentPass")
+    public void testTransitiveArgumentPass() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/transitiveArgumentPass/");
     }
 
     @TestMetadata("valAddCustomAccessor")

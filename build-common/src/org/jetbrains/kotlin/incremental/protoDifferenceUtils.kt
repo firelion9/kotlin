@@ -35,6 +35,7 @@ import org.jetbrains.kotlin.serialization.deserialization.getClassId
 data class Difference(
     val isClassAffected: Boolean = false,
     val areSubclassesAffected: Boolean = false,
+    val isTypeAffected: Boolean = false,
     val changedMembersNames: Set<String> = emptySet(),
     val changedSupertypes: Set<FqName> = emptySet()
 )
@@ -157,6 +158,7 @@ abstract class DifferenceCalculator {
             is ProtoBuf.Function -> hashCode(stringIndexes, fqNameIndexes, typeTable)
             is ProtoBuf.Property -> hashCode(stringIndexes, fqNameIndexes, typeTable)
             is ProtoBuf.TypeAlias -> hashCode(stringIndexes, fqNameIndexes, typeTable)
+            is ProtoBuf.EnumEntry -> hashCode(stringIndexes, fqNameIndexes, typeTable)
             else -> error("Unknown message: $this")
         }
     }
@@ -167,6 +169,7 @@ abstract class DifferenceCalculator {
             old is ProtoBuf.Function && new is ProtoBuf.Function -> checkEquals(old, new)
             old is ProtoBuf.Property && new is ProtoBuf.Property -> checkEquals(old, new)
             old is ProtoBuf.TypeAlias && new is ProtoBuf.TypeAlias -> checkEquals(old, new)
+            old is ProtoBuf.EnumEntry && new is ProtoBuf.EnumEntry -> checkEquals(old, new)
             else -> error("Unknown message: $this")
         }
     }
@@ -190,6 +193,7 @@ class DifferenceCalculatorForClass(
         val diff = compareObject.difference(oldProto, newProto)
 
         var isClassAffected = false
+        var isTypeAffected = false
         var areSubclassesAffected = false
         val changedSupertypes = HashSet<FqName>()
         val names = hashSetOf<String>()
@@ -232,6 +236,7 @@ class DifferenceCalculatorForClass(
                     names.addAll(calcDifferenceForNonPrivateMembers(ProtoBuf.Class::getTypeAliasList))
                 ProtoBufClassKind.ENUM_ENTRY_LIST -> {
                     isClassAffected = true
+                    names.addAll(calcDifferenceForNonPrivateMembers(ProtoBuf.Class::getEnumEntryList))
                 }
                 ProtoBufClassKind.SEALED_SUBCLASS_FQ_NAME_LIST -> {
                     isClassAffected = true
@@ -242,6 +247,7 @@ class DifferenceCalculatorForClass(
                     // the change of the SEALED_SUBCLASS_FQ_NAME_LIST will be detected in the Intermediate,
                     // but there can be usages, that should be rebuilt, without direct references to the Intermediate:
                     //     when (x as Base) { is Impl -> ... }
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
                 ProtoBufClassKind.VERSION_REQUIREMENT_LIST,
@@ -253,12 +259,14 @@ class DifferenceCalculatorForClass(
                 ProtoBufClassKind.TYPE_PARAMETER_LIST,
                 ProtoBufClassKind.JS_EXT_CLASS_ANNOTATION_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
 
                 ProtoBufClassKind.SUPERTYPE_LIST,
                 ProtoBufClassKind.SUPERTYPE_ID_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
 
                     val oldTypeTable = oldProto.typeTableOrNull?.let { TypeTable(it) }
@@ -305,20 +313,24 @@ class DifferenceCalculatorForClass(
                 }
                 ProtoBufClassKind.JAVA_EXT_IS_PACKAGE_PRIVATE_CLASS -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
                 ProtoBufClassKind.BUILT_INS_EXT_CLASS_ANNOTATION_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                 }
                 ProtoBufClassKind.JVM_EXT_ANONYMOUS_OBJECT_ORIGIN_NAME -> {
                     // Not affected, this extension is not used in the compiler
                 }
                 ProtoBufClassKind.KLIB_EXT_CLASS_ANNOTATION_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
                 ProtoBufClassKind.JVM_EXT_JVM_CLASS_FLAGS -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
                 ProtoBufClassKind.INLINE_CLASS_UNDERLYING_PROPERTY_NAME,
@@ -328,16 +340,18 @@ class DifferenceCalculatorForClass(
                 ProtoBufClassKind.MULTI_FIELD_VALUE_CLASS_UNDERLYING_TYPE_LIST,
                 ProtoBufClassKind.MULTI_FIELD_VALUE_CLASS_UNDERLYING_TYPE_ID_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                 }
                 ProtoBufClassKind.CONTEXT_RECEIVER_TYPE_LIST,
                 ProtoBufClassKind.CONTEXT_RECEIVER_TYPE_ID_LIST -> {
                     isClassAffected = true
+                    isTypeAffected = true
                     areSubclassesAffected = true
                 }
             }
         }
 
-        return Difference(isClassAffected, areSubclassesAffected, names, changedSupertypes)
+        return Difference(isClassAffected, isTypeAffected, areSubclassesAffected, names, changedSupertypes)
     }
 
     companion object {

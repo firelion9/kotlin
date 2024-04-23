@@ -23,25 +23,37 @@ class IncrementalPassThroughLookupTrackerComponent(
     private val sourceToFilePathsCache = ConcurrentHashMap<KtSourceElement, String>()
 
     override fun recordLookup(name: String, inScopes: Iterable<String>, source: KtSourceElement?, fileSource: KtSourceElement?) {
+        recordLookup(name, inScopes, source, fileSource, isTypeLookup = false)
+    }
+
+    override fun recordLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?) {
+        recordLookup(name, SmartList(inScope), source, fileSource)
+    }
+
+    override fun recordTypeLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?) {
+        recordLookup(name, SmartList(inScope), source, fileSource, isTypeLookup = true)
+    }
+
+    private fun recordLookup(name: String, inScopes: Iterable<String>, source: KtSourceElement?, fileSource: KtSourceElement?, isTypeLookup: Boolean) {
         // finding file for a source only possible for PSI, here it means
         // that we allow null for file source only for PSI-only "sources", currently - java ones, ignoring the other cases
         // TODO: although there are valid use cases for missing fileSource, the ignore may hide some possible bugs; consider stricter implementation
         val definedSource = fileSource ?: (source as? KtPsiSourceElement) ?: return
         val path = sourceToFilePathsCache.getOrPut(definedSource) {
             sourceToFilePath(definedSource) ?:
-                // TODO: the lookup by non-file source mostly doesn't work for the LT, so we cannot afford null file sources here
-                return
+            // TODO: the lookup by non-file source mostly doesn't work for the LT, so we cannot afford null file sources here
+            return
         }
         val position = if (requiresPosition && source != null && source is KtPsiSourceElement) {
             getLineAndColumnInPsiFile(source.psi.containingFile, source.psi.textRange).let { Position(it.line, it.column) }
         } else Position.NO_POSITION
 
         for (scope in inScopes) {
-            lookupTracker.record(path, position, scope, ScopeKind.PACKAGE, name)
+            if (isTypeLookup) {
+                lookupTracker.recordType(path, position, scope, ScopeKind.PACKAGE, name)
+            } else {
+                lookupTracker.record(path, position, scope, ScopeKind.PACKAGE, name)
+            }
         }
-    }
-
-    override fun recordLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?) {
-        recordLookup(name, SmartList(inScope), source, fileSource)
     }
 }

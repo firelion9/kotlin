@@ -99,7 +99,7 @@ class PostponedArgumentsAnalyzer(
             }
             replaceConeTypeOrNull(resolvedType)
             resolutionContext.session.lookupTracker?.recordTypeResolveAsLookup(
-                resolvedType, source, resolutionContext.bodyResolveComponents.file.source
+                resolvedType, source, resolutionContext.bodyResolveComponents.file.source, isTypeLookup = false
             )
         }
     }

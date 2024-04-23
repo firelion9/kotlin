@@ -629,7 +629,7 @@ abstract class IncrementalCompilerRunner<
         }
 
         val changesCollector = ChangesCollector()
-        removedClasses.forEach { changesCollector.collectSignature(FqName(it), areSubclassesAffected = true) }
+        removedClasses.forEach { changesCollector.collectSignature(FqName(it), areSubclassesAffected = true, isTypeAffected = true) }
         return changesCollector.getChangedAndImpactedSymbols(listOf(caches.platformCache), reporter)
     }
 

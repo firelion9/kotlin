@@ -1,0 +1,3 @@
+package test
+
+fun <U> foo(arg: U): String = ":)"

@@ -137,7 +137,7 @@ fun LookupStorage.update(
 data class DirtyData(
     val dirtyLookupSymbols: Collection<LookupSymbol> = emptyList(),
     val dirtyClassesFqNames: Collection<FqName> = emptyList(),
-    val dirtyClassesFqNamesForceRecompile: Collection<FqName> = emptyList()
+    val dirtyClassesFqNamesForceRecompile: Collection<FqName> = emptyList(),
 )
 
 /**
@@ -188,6 +188,9 @@ fun List<ChangeInfo>.getChangedAndImpactedSymbols(
 
                 val scope = classFqName.parent().asString()
                 val name = classFqName.shortName().identifier
+                if (change.isTypeAffected) {
+                    dirtyLookupSymbols.add(LookupSymbol(name, LookupTracker.TYPES_UNIVERSE_PREFIX + scope))
+                }
                 dirtyLookupSymbols.add(LookupSymbol(name, scope))
             }
         } else if (change is ChangeInfo.MembersChanged) {

@@ -7,6 +7,8 @@ package org.jetbrains.kotlin.fir.resolve.calls.tower
 
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirResolvedQualifier
+import org.jetbrains.kotlin.fir.lookupTracker
+import org.jetbrains.kotlin.fir.recordTypeResolveAsLookup
 import org.jetbrains.kotlin.fir.references.FirSuperReference
 import org.jetbrains.kotlin.fir.resolve.BodyResolveComponents
 import org.jetbrains.kotlin.fir.resolve.calls.*
@@ -110,6 +112,9 @@ class FirTowerResolver(
 
         val candidateFactory = CandidateFactory(context, info)
         val resultCollector = collector
+
+        // the supertype is resolved only as type, but now we are going to resolve its appropriate constructor
+        context.session.lookupTracker?.recordTypeResolveAsLookup(constructedType, info.callSite.source, components.file.source, isTypeLookup = false)
 
         scope.processDeclaredConstructors {
             resultCollector.consumeCandidate(

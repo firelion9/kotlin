@@ -354,8 +354,6 @@ fun FirDeclarationCollector<FirBasedSymbol<*>>.collectTopLevel(file: FirFile, pa
                     conflictingPresentation,
                     conflictingFile
                 )
-
-                session.lookupTracker?.recordNameLookup(declarationName, file.packageFqName.asString(), declaration.source, file.source)
             }
         }
 
