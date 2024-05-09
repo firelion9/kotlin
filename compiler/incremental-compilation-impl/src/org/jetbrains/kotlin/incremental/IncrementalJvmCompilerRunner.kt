@@ -57,6 +57,7 @@ import org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotBuildRepo
 import org.jetbrains.kotlin.incremental.classpathDiff.ProgramSymbolSet
 import org.jetbrains.kotlin.incremental.classpathDiff.shrinkAndSaveClasspathSnapshot
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.multiproject.ModulesApiHistory
 import org.jetbrains.kotlin.incremental.util.BufferingMessageCollector
@@ -261,7 +262,6 @@ open class IncrementalJvmCompilerRunner(
                     is ChangesEither.Unknown -> return CompilationMode.Rebuild(javaFilesChanges.reason)
                 }
                 dirtyFiles.addByDirtySymbols(affectedJavaSymbols)
-                dirtyFiles.addByDirtySymbols(affectedJavaSymbols.map { it.copy(scope = LookupTracker.TYPES_UNIVERSE_PREFIX + it.scope) })
             } else {
                 val rebuildReason = processChangedJava(changedFiles, caches)
                 if (rebuildReason != null) return CompilationMode.Rebuild(rebuildReason)
@@ -350,7 +350,7 @@ open class IncrementalJvmCompilerRunner(
         for (file in changedFiles.modified + changedFiles.removed) {
             if (file.extension.lowercase() != "xml") continue
             val layoutName = file.name.substringBeforeLast('.')
-            result.add(LookupSymbol(ANDROID_LAYOUT_CONTENT_LOOKUP_NAME, layoutName))
+            result.add(LookupSymbol(ANDROID_LAYOUT_CONTENT_LOOKUP_NAME, layoutName, LookupKind.NAME))
         }
 
         return result

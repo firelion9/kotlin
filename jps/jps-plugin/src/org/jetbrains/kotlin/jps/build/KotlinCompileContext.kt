@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.build.joinToReadableString
 import org.jetbrains.kotlin.config.CompilerRunnerConstants.KOTLIN_COMPILER_NAME
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.LookupSymbol
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.storage.FileToPathConverter
 import org.jetbrains.kotlin.jps.KotlinJpsBundle
 import org.jetbrains.kotlin.jps.incremental.*
@@ -128,7 +129,7 @@ class KotlinCompileContext(val jpsContext: CompileContext) {
             // request rebuild if storage is corrupted
             try {
                 lookupStorageManager.withLookupStorage {
-                    it.get(LookupSymbol("<#NAME#>", "<#SCOPE#>"))
+                    it.get(LookupSymbol("<#NAME#>", "<#SCOPE#>", LookupKind.NAME))
                 }
             } catch (e: Exception) {
                 // replace to jpsReportInternalBuilderError when IDEA-201297 will be implemented

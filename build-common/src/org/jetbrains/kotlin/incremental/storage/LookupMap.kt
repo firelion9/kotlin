@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.incremental.storage
 
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
+import org.jetbrains.kotlin.name.LookupKind
 import java.io.File
 
 class LookupMap(
@@ -30,7 +31,7 @@ class LookupMap(
 ) {
 
     @Synchronized
-    fun add(name: String, scope: String, fileId: Int) {
-        append(LookupSymbolKey(name, scope), fileId)
+    fun add(name: String, scope: String, kind: LookupKind, fileId: Int) {
+        append(LookupSymbolKey(name, scope, kind), fileId)
     }
 }

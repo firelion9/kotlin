@@ -17,6 +17,7 @@
 package org.jetbrains.kotlin.incremental.components
 
 import org.jetbrains.kotlin.container.DefaultImplementation
+import org.jetbrains.kotlin.name.LookupKind
 import java.io.Serializable
 
 @DefaultImplementation(LookupTracker.DO_NOTHING::class)
@@ -29,16 +30,9 @@ interface LookupTracker {
         position: Position,
         scopeFqName: String,
         scopeKind: ScopeKind,
-        name: String
+        name: String,
+        kind: LookupKind,
     )
-
-    fun recordType(
-        filePath: String,
-        position: Position,
-        scopeFqName: String,
-        scopeKind: ScopeKind,
-        name: String
-    ) = record(filePath, position, TYPES_UNIVERSE_PREFIX + scopeFqName, scopeKind, name)
 
     fun clear()
 
@@ -46,15 +40,11 @@ interface LookupTracker {
         override val requiresPosition: Boolean
             get() = false
 
-        override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String) {
+        override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String, kind: LookupKind) {
         }
 
         override fun clear() {
         }
-    }
-
-    companion object {
-        const val TYPES_UNIVERSE_PREFIX: String = "type/"
     }
 }
 
@@ -68,5 +58,6 @@ data class LookupInfo(
     val position: Position,
     val scopeFqName: String,
     val scopeKind: ScopeKind,
-    val name: String
+    val name: String,
+    val kind: LookupKind,
 ) : Serializable

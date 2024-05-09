@@ -195,7 +195,7 @@ abstract class AbstractIncrementalJpsTest(
             // testingContext.kotlinCompileContext is initialized in KotlinBuilder.initializeKotlinContext
             kotlinCompileContext = testingContext.kotlinCompileContext!!
 
-            lookupTracker.lookups.mapTo(lookupsDuringTest) { LookupSymbol(it.name, it.scopeFqName) }
+            lookupTracker.lookups.mapTo(lookupsDuringTest) { LookupSymbol(it.name, it.scopeFqName, it.kind) }
 
             if (!buildResult.isSuccessful) {
                 val errorMessages =

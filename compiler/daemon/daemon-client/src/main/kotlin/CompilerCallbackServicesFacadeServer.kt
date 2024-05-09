@@ -98,7 +98,7 @@ open class CompilerCallbackServicesFacadeServer(
         val lookupTracker = lookupTracker!!
 
         for (it in lookups) {
-            lookupTracker.record(it.filePath, it.position, it.scopeFqName, it.scopeKind, it.name)
+            lookupTracker.record(it.filePath, it.position, it.scopeFqName, it.scopeKind, it.name, it.kind)
         }
     }
 

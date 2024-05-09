@@ -18,10 +18,8 @@ package org.jetbrains.kotlin.incremental
 
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
-import org.jetbrains.kotlin.incremental.components.LookupLocation
-import org.jetbrains.kotlin.incremental.components.LookupTracker
-import org.jetbrains.kotlin.incremental.components.Position
-import org.jetbrains.kotlin.incremental.components.ScopeKind
+import org.jetbrains.kotlin.incremental.components.*
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
 
@@ -31,7 +29,7 @@ fun LookupTracker.record(from: LookupLocation, scopeOwner: ClassDescriptor, name
     if (this === LookupTracker.DO_NOTHING) return
     val location = from.location ?: return
     val position = if (requiresPosition) location.position else Position.NO_POSITION
-    record(location.filePath, position, DescriptorUtils.getFqName(scopeOwner).asString(), ScopeKind.CLASSIFIER, name.asString())
+    record(location.filePath, position, DescriptorUtils.getFqName(scopeOwner).asString(), ScopeKind.CLASSIFIER, name.asString(), LookupKind.NAME)
 }
 
 fun LookupTracker.record(from: LookupLocation, scopeOwner: PackageFragmentDescriptor, name: Name) {
@@ -42,7 +40,7 @@ fun LookupTracker.recordPackageLookup(from: LookupLocation, packageFqName: Strin
     if (this === LookupTracker.DO_NOTHING) return
     val location = from.location ?: return
     val position = if (requiresPosition) location.position else Position.NO_POSITION
-    record(location.filePath, position, packageFqName, ScopeKind.PACKAGE, name)
+    record(location.filePath, position, packageFqName, ScopeKind.PACKAGE, name, LookupKind.NAME)
 }
 
 const val ANDROID_LAYOUT_CONTENT_LOOKUP_NAME = "<LAYOUT-CONTENT>"

@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.buildtools.api.jvm.ClassSnapshotGranularity.CLASS_ME
 import org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotTestCommon.ClassFileUtil.asFile
 import org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotTestCommon.ClassFileUtil.snapshot
 import org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotTestCommon.CompileUtil.compileAll
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.kotlin.resolve.sam.SAM_LOOKUP_NAME
 import org.junit.Test
@@ -49,9 +50,9 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testAbiVersusNonAbiChanges/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "publicPropertyChangedType", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "publicFunctionChangedSignature", scope = "com.example.SomeClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass"),
+                LookupSymbol(name = "publicPropertyChangedType", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "publicFunctionChangedSignature", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME),
             ),
             fqNames = setOf("com.example.SomeClass")
         ).assertEquals(changes)
@@ -63,22 +64,22 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         Changes(
             lookupSymbols = setOf(
                 // ModifiedClassUnchangedMembers
-                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example"),
+                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example", kind = LookupKind.NAME),
 
                 // ModifiedClassChangedMembers
-                LookupSymbol(name = "modifiedProperty", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "addedProperty", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "removedProperty", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "modifiedFunction", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "addedFunction", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "removedFunction", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ModifiedClassChangedMembers"),
+                LookupSymbol(name = "modifiedProperty", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedProperty", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedProperty", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "modifiedFunction", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedFunction", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedFunction", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
 
                 // AddedClass
-                LookupSymbol(name = "AddedClass", scope = "com.example"),
+                LookupSymbol(name = "AddedClass", scope = "com.example", kind = LookupKind.NAME),
 
                 // RemovedClass
-                LookupSymbol(name = "RemovedClass", scope = "com.example"),
+                LookupSymbol(name = "RemovedClass", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.ModifiedClassUnchangedMembers",
@@ -94,10 +95,10 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testModifiedAddedRemovedElements/src"), tmpDir, CLASS_LEVEL)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example"),
-                LookupSymbol(name = "ModifiedClassChangedMembers", scope = "com.example"),
-                LookupSymbol(name = "AddedClass", scope = "com.example"),
-                LookupSymbol(name = "RemovedClass", scope = "com.example"),
+                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "ModifiedClassChangedMembers", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "AddedClass", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "RemovedClass", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.ModifiedClassUnchangedMembers",
@@ -116,12 +117,24 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(currentClasspathSnapshot, previousClasspathSnapshot)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "CoarseGrainedFirstBuild_FineGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "FineGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "modifiedProperty", scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class"),
-                LookupSymbol(name = "modifiedFunction", scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class")
+                LookupSymbol(name = "CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "CoarseGrainedFirstBuild_FineGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "FineGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(
+                    name = "modifiedProperty",
+                    scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class",
+                    kind = LookupKind.NAME
+                ),
+                LookupSymbol(
+                    name = "modifiedFunction",
+                    scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class",
+                    kind = LookupKind.NAME
+                ),
+                LookupSymbol(
+                    name = SAM_LOOKUP_NAME.asString(),
+                    scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class",
+                    kind = LookupKind.NAME
+                )
             ),
             fqNames = setOf(
                 "com.example.CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class",
@@ -137,14 +150,14 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testTopLevelMembers/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "modifiedTopLevelProperty", scope = "com.example"),
-                LookupSymbol(name = "addedTopLevelProperty", scope = "com.example"),
-                LookupSymbol(name = "removedTopLevelProperty", scope = "com.example"),
-                LookupSymbol(name = "movedTopLevelProperty", scope = "com.example"),
-                LookupSymbol(name = "modifiedTopLevelFunction", scope = "com.example"),
-                LookupSymbol(name = "addedTopLevelFunction", scope = "com.example"),
-                LookupSymbol(name = "removedTopLevelFunction", scope = "com.example"),
-                LookupSymbol(name = "movedTopLevelFunction", scope = "com.example"),
+                LookupSymbol(name = "modifiedTopLevelProperty", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedTopLevelProperty", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedTopLevelProperty", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "movedTopLevelProperty", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "modifiedTopLevelFunction", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedTopLevelFunction", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedTopLevelFunction", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "movedTopLevelFunction", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf("com.example")
         ).assertEquals(changes)
@@ -156,30 +169,30 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         Changes(
             lookupSymbols = setOf(
                 // NormalClass
-                LookupSymbol(name = "propertyInNormalClass", scope = "com.example.NormalClass"),
-                LookupSymbol(name = "functionInNormalClass", scope = "com.example.NormalClass"),
+                LookupSymbol(name = "propertyInNormalClass", scope = "com.example.NormalClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInNormalClass", scope = "com.example.NormalClass", kind = LookupKind.NAME),
 
                 // NormalClass.CompanionObject
-                LookupSymbol(name = "propertyInCompanionObject", scope = "com.example.NormalClass.CompanionObject"),
-                LookupSymbol(name = "functionInCompanionObject", scope = "com.example.NormalClass.CompanionObject"),
+                LookupSymbol(name = "propertyInCompanionObject", scope = "com.example.NormalClass.CompanionObject", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInCompanionObject", scope = "com.example.NormalClass.CompanionObject", kind = LookupKind.NAME),
 
                 // NormalClass.NestedClass
-                LookupSymbol(name = "propertyInNestedClass", scope = "com.example.NormalClass.NestedClass"),
-                LookupSymbol(name = "functionInNestedClass", scope = "com.example.NormalClass.NestedClass"),
+                LookupSymbol(name = "propertyInNestedClass", scope = "com.example.NormalClass.NestedClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInNestedClass", scope = "com.example.NormalClass.NestedClass", kind = LookupKind.NAME),
 
                 // FileFacade
-                LookupSymbol(name = "propertyInFileFacade", scope = "com.example"),
-                LookupSymbol(name = "functionInFileFacade", scope = "com.example"),
+                LookupSymbol(name = "propertyInFileFacade", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInFileFacade", scope = "com.example", kind = LookupKind.NAME),
 
                 // MultifileClass
-                LookupSymbol(name = "propertyInMultifileClass1", scope = "com.example"),
-                LookupSymbol(name = "functionInMultifileClass1", scope = "com.example"),
-                LookupSymbol(name = "propertyInMultifileClass2", scope = "com.example"),
-                LookupSymbol(name = "functionInMultifileClass2", scope = "com.example"),
+                LookupSymbol(name = "propertyInMultifileClass1", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInMultifileClass1", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "propertyInMultifileClass2", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "functionInMultifileClass2", scope = "com.example", kind = LookupKind.NAME),
 
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass.CompanionObject"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass.NestedClass"),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass.CompanionObject", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.NormalClass.NestedClass", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.NormalClass",
@@ -195,18 +208,18 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testConstantsAndInlineFunctions/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "constantChangedType", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass"),
+                LookupSymbol(name = "constantChangedType", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass", kind = LookupKind.NAME),
 
-                LookupSymbol(name = "constantChangedType", scope = "com.example.SomeClass.CompanionObject"),
-                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass.CompanionObject"),
+                LookupSymbol(name = "constantChangedType", scope = "com.example.SomeClass.CompanionObject", kind = LookupKind.NAME),
+                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass.CompanionObject", kind = LookupKind.NAME),
 
-                LookupSymbol(name = "inlineFunctionChangedSignature", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "inlineFunctionChangedImplementation", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "inlineFunctionChangedLineNumber", scope = "com.example.SomeClass"),
+                LookupSymbol(name = "inlineFunctionChangedSignature", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "inlineFunctionChangedImplementation", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "inlineFunctionChangedLineNumber", scope = "com.example.SomeClass", kind = LookupKind.NAME),
 
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass.CompanionObject"),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass.CompanionObject", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.SomeClass",
@@ -220,15 +233,15 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testPropertyAccessors/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "property_ChangedType", scope = "com.example.SomeClass"),
+                LookupSymbol(name = "property_ChangedType", scope = "com.example.SomeClass", kind = LookupKind.NAME),
 
-                LookupSymbol(name = "inlineProperty_ChangedType", scope = "com.example"),
-                LookupSymbol(name = "inlineProperty_ChangedType_BackingField", scope = "com.example"),
+                LookupSymbol(name = "inlineProperty_ChangedType", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "inlineProperty_ChangedType_BackingField", scope = "com.example", kind = LookupKind.NAME),
 
-                LookupSymbol(name = "inlineProperty_ChangedGetterImpl", scope = "com.example"),
-                LookupSymbol(name = "inlineProperty_ChangedSetterImpl", scope = "com.example"),
+                LookupSymbol(name = "inlineProperty_ChangedGetterImpl", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "inlineProperty_ChangedSetterImpl", scope = "com.example", kind = LookupKind.NAME),
 
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass")
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example",
@@ -242,13 +255,13 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testFunctionsAndPropertyAccessorsWithJvmNames/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "changedFunction", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "changedPropertyAccessor", scope = "com.example.SomeClass"),
+                LookupSymbol(name = "changedFunction", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedPropertyAccessor", scope = "com.example.SomeClass", kind = LookupKind.NAME),
 
-                LookupSymbol(name = "changedInlineFunction", scope = "com.example"),
-                LookupSymbol(name = "changedInlinePropertyAccessor", scope = "com.example"),
+                LookupSymbol(name = "changedInlineFunction", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedInlinePropertyAccessor", scope = "com.example", kind = LookupKind.NAME),
 
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass"),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example",
@@ -266,8 +279,8 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testRenameFileFacade/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "someFunction", scope = "com.example"),
-                LookupSymbol(name = "someProperty", scope = "com.example"),
+                LookupSymbol(name = "someFunction", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "someProperty", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf("com.example")
         ).assertEquals(changes)
@@ -283,7 +296,7 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testChangedAnnotations/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "SomeClassWithChangedAnnotation", scope = "com.example"),
+                LookupSymbol(name = "SomeClassWithChangedAnnotation", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.SomeClassWithChangedAnnotation",
@@ -298,7 +311,7 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testDelegatedProperties/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "delegatedProperty", scope = "com.example"),
+                LookupSymbol(name = "delegatedProperty", scope = "com.example", kind = LookupKind.NAME),
             ),
             fqNames = setOf("com.example")
         ).assertEquals(changes)
@@ -310,15 +323,15 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testImpactComputation_SupertypesInheritors/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "changedProperty", scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = "changedProperty", scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedProperty", scope = "com.example.SubSubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.SubSubClassOfChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubSubClassOfChangedSuperClass")
+                LookupSymbol(name = "changedProperty", scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedProperty", scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedProperty", scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example.ChangedSuperClass",
@@ -340,9 +353,9 @@ class KotlinOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "KotlinOnly/testImpactComputation_ConstantsInCompanionObjects/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass"),
-                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass.CompanionObject"),
+                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "constantChangedValue", scope = "com.example.SomeClass.CompanionObject", kind = LookupKind.NAME),
             ),
             fqNames = setOf(
                 "com.example.SomeClass",
@@ -359,9 +372,9 @@ class JavaOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "JavaOnly/testAbiVersusNonAbiChanges/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "publicFieldChangedType", scope = "com.example.SomeClass"),
-                LookupSymbol(name = "publicMethodChangedSignature", scope = "com.example.SomeClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass")
+                LookupSymbol(name = "publicFieldChangedType", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "publicMethodChangedSignature", scope = "com.example.SomeClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SomeClass", kind = LookupKind.NAME)
             ),
             fqNames = setOf("com.example.SomeClass")
         ).assertEquals(changes)
@@ -373,22 +386,22 @@ class JavaOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         Changes(
             lookupSymbols = setOf(
                 // ModifiedClassUnchangedMembers
-                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example"),
+                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example", kind = LookupKind.NAME),
 
                 // ModifiedClassChangedMembers
-                LookupSymbol(name = "modifiedField", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "addedField", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "removedField", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "modifiedMethod", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "addedMethod", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = "removedMethod", scope = "com.example.ModifiedClassChangedMembers"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ModifiedClassChangedMembers"),
+                LookupSymbol(name = "modifiedField", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedField", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedField", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "modifiedMethod", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "addedMethod", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = "removedMethod", scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ModifiedClassChangedMembers", kind = LookupKind.NAME),
 
                 // AddedClass
-                LookupSymbol(name = "AddedClass", scope = "com.example"),
+                LookupSymbol(name = "AddedClass", scope = "com.example", kind = LookupKind.NAME),
 
                 // RemovedClass
-                LookupSymbol(name = "RemovedClass", scope = "com.example")
+                LookupSymbol(name = "RemovedClass", scope = "com.example", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example.ModifiedClassUnchangedMembers",
@@ -404,10 +417,10 @@ class JavaOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "JavaOnly/testModifiedAddedRemovedElements/src"), tmpDir, CLASS_LEVEL)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example"),
-                LookupSymbol(name = "ModifiedClassChangedMembers", scope = "com.example"),
-                LookupSymbol(name = "AddedClass", scope = "com.example"),
-                LookupSymbol(name = "RemovedClass", scope = "com.example")
+                LookupSymbol(name = "ModifiedClassUnchangedMembers", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "ModifiedClassChangedMembers", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "AddedClass", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "RemovedClass", scope = "com.example", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example.ModifiedClassUnchangedMembers",
@@ -426,12 +439,20 @@ class JavaOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(currentClasspathSnapshot, previousClasspathSnapshot)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "CoarseGrainedFirstBuild_FineGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "FineGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example"),
-                LookupSymbol(name = "modifiedField", scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class"),
-                LookupSymbol(name = "modifiedMethod", scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class")
+                LookupSymbol(name = "CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "CoarseGrainedFirstBuild_FineGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "FineGrainedFirstBuild_CoarseGrainedSecondBuild_Class", scope = "com.example", kind = LookupKind.NAME),
+                LookupSymbol(name = "modifiedField", scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class", kind = LookupKind.NAME),
+                LookupSymbol(
+                    name = "modifiedMethod",
+                    scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class",
+                    kind = LookupKind.NAME
+                ),
+                LookupSymbol(
+                    name = SAM_LOOKUP_NAME.asString(),
+                    scope = "com.example.FineGrainedFirstBuild_FineGrainedSecondBuild_Class",
+                    kind = LookupKind.NAME
+                )
             ),
             fqNames = setOf(
                 "com.example.CoarseGrainedFirstBuild_CoarseGrainedSecondBuild_Class",
@@ -447,15 +468,15 @@ class JavaOnlyClasspathChangesComputerTest : ClasspathChangesComputerTest() {
         val changes = computeClasspathChanges(File(testDataDir, "JavaOnly/testImpactComputation_SupertypesInheritors/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "changedField", scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = "changedField", scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedField", scope = "com.example.SubSubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.SubSubClassOfChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubClassOfChangedSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubSubClassOfChangedSuperClass")
+                LookupSymbol(name = "changedField", scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedField", scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedField", scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubClassOfChangedSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.SubSubClassOfChangedSuperClass", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example.ChangedSuperClass",
@@ -476,24 +497,24 @@ class KotlinAndJavaClasspathChangesComputerTest : ClasspathSnapshotTestCommon() 
         val changes = computeClasspathChanges(File(testDataDir, "KotlinAndJava/testImpactComputation_SupertypesInheritors/src"), tmpDir)
         Changes(
             lookupSymbols = setOf(
-                LookupSymbol(name = "changedProperty", scope = "com.example.ChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedProperty", scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedProperty", scope = "com.example.JavaSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.ChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedFunction", scope = "com.example.JavaSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedKotlinSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.JavaSubClassOfChangedKotlinSuperClass"),
-                LookupSymbol(name = "changedField", scope = "com.example.ChangedJavaSuperClass"),
-                LookupSymbol(name = "changedField", scope = "com.example.KotlinSubClassOfChangedJavaSuperClass"),
-                LookupSymbol(name = "changedField", scope = "com.example.JavaSubClassOfChangedJavaSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.ChangedJavaSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.KotlinSubClassOfChangedJavaSuperClass"),
-                LookupSymbol(name = "changedMethod", scope = "com.example.JavaSubClassOfChangedJavaSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedJavaSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.KotlinSubClassOfChangedJavaSuperClass"),
-                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.JavaSubClassOfChangedJavaSuperClass")
+                LookupSymbol(name = "changedProperty", scope = "com.example.ChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedProperty", scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedProperty", scope = "com.example.JavaSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.ChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedFunction", scope = "com.example.JavaSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.KotlinSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.JavaSubClassOfChangedKotlinSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedField", scope = "com.example.ChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedField", scope = "com.example.KotlinSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedField", scope = "com.example.JavaSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.ChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.KotlinSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = "changedMethod", scope = "com.example.JavaSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.ChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.KotlinSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME),
+                LookupSymbol(name = SAM_LOOKUP_NAME.asString(), scope = "com.example.JavaSubClassOfChangedJavaSuperClass", kind = LookupKind.NAME)
             ),
             fqNames = setOf(
                 "com.example.ChangedKotlinSuperClass",

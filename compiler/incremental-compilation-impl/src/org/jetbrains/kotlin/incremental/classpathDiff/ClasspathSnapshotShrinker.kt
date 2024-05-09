@@ -69,7 +69,7 @@ object ClasspathSnapshotShrinker {
     ): List<AccessibleClassSnapshot> {
         // Use LookupSymbolSet for efficiency
         val lookupSymbols =
-            LookupSymbolSet(lookupSymbolKeys.asSequence().map { LookupSymbol(name = it.name, scope = it.scope) }.asIterable())
+            LookupSymbolSet(lookupSymbolKeys.asSequence().map { LookupSymbol(name = it.name, scope = it.scope, kind = it.kind) }.asIterable())
 
         val referencedClasses = allClasses.filter { clazz ->
             when (clazz) {

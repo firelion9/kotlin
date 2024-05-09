@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.incremental
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.containers.MultiMap
 import org.jetbrains.annotations.TestOnly
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.components.Position
 import org.jetbrains.kotlin.incremental.components.ScopeKind
@@ -90,7 +91,7 @@ open class LookupStorage(
 
     @Synchronized
     fun get(lookupSymbol: LookupSymbol): Collection<String> {
-        val key = LookupSymbolKey(lookupSymbol.name, lookupSymbol.scope)
+        val key = LookupSymbolKey(lookupSymbol.name, lookupSymbol.scope, lookupSymbol.kind)
         val fileIds = lookupMap[key] ?: return emptySet()
         val paths = mutableSetOf<String>()
         val filtered = mutableSetOf<Int>()
@@ -117,7 +118,7 @@ open class LookupStorage(
         val pathToId = allPaths.sorted().keysToMap { addFileIfNeeded(File(it)) }
 
         for (lookupSymbol in lookups.keySet().sorted()) {
-            val key = LookupSymbolKey(lookupSymbol.name, lookupSymbol.scope)
+            val key = LookupSymbolKey(lookupSymbol.name, lookupSymbol.scope, lookupSymbol.kind)
             val paths = lookups[lookupSymbol]
             val fileIds = paths.mapTo(TreeSet()) { pathToId[it]!! }
 
@@ -213,7 +214,7 @@ open class LookupStorage(
         p.println("====== Id to file map")
         p.println(idToFile.dump())
 
-        val lookupsStrings = lookupSymbols.groupBy { LookupSymbolKey(it.name, it.scope) }
+        val lookupsStrings = lookupSymbols.groupBy { LookupSymbolKey(it.name, it.scope, it.kind) }
 
         for (lookup in lookupMap.keys.sorted()) {
             val fileIds = lookupMap[lookup]!!
@@ -245,9 +246,10 @@ class LookupTrackerImpl(private val delegate: LookupTracker) : LookupTracker {
     var prevScopeFqName: String = ""
     var prevScopeKind: ScopeKind? = null
     var prevName: String = ""
+    var prevKind: LookupKind? = null
 
     // This method is very hot and sequential invocations usually have the same parameters. Thus we cache previous parameters
-    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String) {
+    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String, kind: LookupKind) {
         val nameChanged = if (name != prevName) {
             prevName = interner.intern(name)
             true
@@ -260,15 +262,19 @@ class LookupTrackerImpl(private val delegate: LookupTracker) : LookupTracker {
             prevFilePath = pathInterner.intern(filePath)
             true
         } else false
+        val kindChanged = if (kind != prevKind) {
+            prevKind = kind
+            true
+        } else false
 
-        val lookupChanged = nameChanged || fqNameChanged || filePathChanged
+        val lookupChanged = nameChanged || fqNameChanged || filePathChanged || kindChanged
         if (lookupChanged) {
-            lookups.putValue(LookupSymbol(prevName, prevScopeFqName), prevFilePath)
+            lookups.putValue(LookupSymbol(prevName, prevScopeFqName, kind), prevFilePath)
         }
         if (lookupChanged || prevPosition != position || prevScopeKind != scopeKind) {
             prevPosition = position
             prevScopeKind = scopeKind
-            delegate.record(prevFilePath, position, prevScopeFqName, scopeKind, prevName)
+            delegate.record(prevFilePath, position, prevScopeFqName, scopeKind, prevName, kind)
         }
     }
 
@@ -282,12 +288,15 @@ class LookupTrackerImpl(private val delegate: LookupTracker) : LookupTracker {
     }
 }
 
-data class LookupSymbol(val name: String, val scope: String) : Comparable<LookupSymbol> {
+data class LookupSymbol(val name: String, val scope: String, val kind: LookupKind) : Comparable<LookupSymbol> {
     override fun compareTo(other: LookupSymbol): Int {
         val scopeCompare = scope.compareTo(other.scope)
         if (scopeCompare != 0) return scopeCompare
 
-        return name.compareTo(other.name)
+        val nameCompare = name.compareTo(other.name)
+        if (nameCompare != 0) return nameCompare
+
+        return kind.compareTo(other.kind)
     }
 }
 

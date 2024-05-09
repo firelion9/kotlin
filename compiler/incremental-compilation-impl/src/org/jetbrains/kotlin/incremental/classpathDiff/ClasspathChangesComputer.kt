@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.incremental.*
 import org.jetbrains.kotlin.incremental.classpathDiff.BreadthFirstSearch.findReachableNodes
 import org.jetbrains.kotlin.incremental.classpathDiff.ClasspathSnapshotShrinker.shrinkClasspath
 import org.jetbrains.kotlin.incremental.classpathDiff.ImpactedSymbolsComputer.computeImpactedSymbols
-import org.jetbrains.kotlin.incremental.components.LookupTracker
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.storage.ListExternalizer
 import org.jetbrains.kotlin.incremental.storage.loadFromFile
 import org.jetbrains.kotlin.name.ClassId
@@ -305,8 +305,9 @@ object ClasspathChangesComputer {
             it.lookupSymbols.toSet() to it.fqNames.toSet()
         }
         val unmatchedLookupSymbols = this.dirtyLookupSymbols.toMutableSet().also { unmatchedSet ->
-            unmatchedSet.removeAll(changedLookupSymbols)
-            unmatchedSet.removeAll { it.scope.startsWith(LookupTracker.TYPES_UNIVERSE_PREFIX) }
+            unmatchedSet.removeAll {
+                it.copy(kind = LookupKind.NAME) in changedLookupSymbols
+            }
         }
         val unmatchedFqNames = this.dirtyClassesFqNames.toMutableSet().also {
             it.addAll(this.dirtyClassesFqNamesForceRecompile)

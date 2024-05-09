@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.incremental.components.LocationInfo
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.components.Position
 import org.jetbrains.kotlin.incremental.components.ScopeKind
 import org.jetbrains.kotlin.name.ClassId
@@ -75,7 +76,8 @@ fun GenerationState.trackLookup(container: FqName, functionName: String, locatio
             if (lookupTracker.requiresPosition) location.position else Position.NO_POSITION,
             container.asString(),
             ScopeKind.CLASSIFIER,
-            functionName
+            functionName,
+            LookupKind.NAME
         )
     }
 }

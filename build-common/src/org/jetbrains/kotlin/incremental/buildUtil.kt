@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.build.isModuleMappingFile
 import org.jetbrains.kotlin.build.report.ICReporter
 import org.jetbrains.kotlin.build.report.debug
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache
 import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCompilationComponents
@@ -189,9 +190,9 @@ fun List<ChangeInfo>.getChangedAndImpactedSymbols(
                 val scope = classFqName.parent().asString()
                 val name = classFqName.shortName().identifier
                 if (change.isTypeAffected) {
-                    dirtyLookupSymbols.add(LookupSymbol(name, LookupTracker.TYPES_UNIVERSE_PREFIX + scope))
+                    dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.TYPE))
                 }
-                dirtyLookupSymbols.add(LookupSymbol(name, scope))
+                dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.NAME))
             }
         } else if (change is ChangeInfo.MembersChanged) {
             val fqNames = withSubtypes(change.fqName, caches)
@@ -199,10 +200,10 @@ fun List<ChangeInfo>.getChangedAndImpactedSymbols(
             dirtyClassesFqNames.addAll(fqNames)
 
             for (name in change.names) {
-                fqNames.mapTo(dirtyLookupSymbols) { LookupSymbol(name, it.asString()) }
+                fqNames.mapTo(dirtyLookupSymbols) { LookupSymbol(name, it.asString(), LookupKind.NAME) }
             }
 
-            fqNames.mapTo(dirtyLookupSymbols) { LookupSymbol(SAM_LOOKUP_NAME.asString(), it.asString()) }
+            fqNames.mapTo(dirtyLookupSymbols) { LookupSymbol(SAM_LOOKUP_NAME.asString(), it.asString(), LookupKind.NAME) }
         } else if (change is ChangeInfo.ParentsChanged) {
             change.parentsChanged.forEach { parent ->
                 sealedParents.addAll(findSealedSupertypes(parent, caches))

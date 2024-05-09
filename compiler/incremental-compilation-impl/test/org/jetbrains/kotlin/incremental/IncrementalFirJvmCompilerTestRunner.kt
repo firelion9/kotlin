@@ -39,7 +39,7 @@ class IncrementalFirJvmCompilerTestRunner(
                         "\n=============\n" +
                         this.inputsCache.dump().replace("rebuild-out", "out")
 
-                testLookupTracker.lookups.mapTo(testLookupTracker.savedLookups) { LookupSymbol(it.name, it.scopeFqName) }
+                testLookupTracker.lookups.mapTo(testLookupTracker.savedLookups) { LookupSymbol(it.name, it.scopeFqName, it.kind) }
                 this.lookupCache.forceGC()
                 val lookupsDump = this.lookupCache.dump(testLookupTracker.savedLookups)
 

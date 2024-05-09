@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.fir
 import org.jetbrains.kotlin.KtPsiSourceElement
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticUtils.getLineAndColumnInPsiFile
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.components.Position
 import org.jetbrains.kotlin.incremental.components.ScopeKind
@@ -22,19 +23,13 @@ class IncrementalPassThroughLookupTrackerComponent(
     private val requiresPosition = lookupTracker.requiresPosition
     private val sourceToFilePathsCache = ConcurrentHashMap<KtSourceElement, String>()
 
-    override fun recordLookup(name: String, inScopes: Iterable<String>, source: KtSourceElement?, fileSource: KtSourceElement?) {
-        recordLookup(name, inScopes, source, fileSource, isTypeLookup = false)
-    }
-
-    override fun recordLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?) {
-        recordLookup(name, SmartList(inScope), source, fileSource)
-    }
-
-    override fun recordTypeLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?) {
-        recordLookup(name, SmartList(inScope), source, fileSource, isTypeLookup = true)
-    }
-
-    private fun recordLookup(name: String, inScopes: Iterable<String>, source: KtSourceElement?, fileSource: KtSourceElement?, isTypeLookup: Boolean) {
+    override fun recordLookup(
+        name: String,
+        inScopes: Iterable<String>,
+        source: KtSourceElement?,
+        fileSource: KtSourceElement?,
+        kind: LookupKind
+    ) {
         // finding file for a source only possible for PSI, here it means
         // that we allow null for file source only for PSI-only "sources", currently - java ones, ignoring the other cases
         // TODO: although there are valid use cases for missing fileSource, the ignore may hide some possible bugs; consider stricter implementation
@@ -49,11 +44,11 @@ class IncrementalPassThroughLookupTrackerComponent(
         } else Position.NO_POSITION
 
         for (scope in inScopes) {
-            if (isTypeLookup) {
-                lookupTracker.recordType(path, position, scope, ScopeKind.PACKAGE, name)
-            } else {
-                lookupTracker.record(path, position, scope, ScopeKind.PACKAGE, name)
-            }
+            lookupTracker.record(path, position, scope, ScopeKind.PACKAGE, name, kind)
         }
+    }
+
+    override fun recordLookup(name: String, inScope: String, source: KtSourceElement?, fileSource: KtSourceElement?, kind: LookupKind) {
+        recordLookup(name, SmartList(inScope), source, fileSource, kind)
     }
 }

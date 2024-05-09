@@ -21,10 +21,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import org.jetbrains.kotlin.daemon.common.DummyProfiler
 import org.jetbrains.kotlin.daemon.common.Profiler
 import org.jetbrains.kotlin.daemon.common.withMeasure
-import org.jetbrains.kotlin.incremental.components.LookupInfo
-import org.jetbrains.kotlin.incremental.components.LookupTracker
-import org.jetbrains.kotlin.incremental.components.Position
-import org.jetbrains.kotlin.incremental.components.ScopeKind
+import org.jetbrains.kotlin.incremental.components.*
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.utils.createStringInterner
 
 class RemoteLookupTrackerClient(
@@ -34,13 +32,13 @@ class RemoteLookupTrackerClient(
 ) : LookupTracker {
     private val isDoNothing = profiler.withMeasure(this) { facade.lookupTracker_isDoNothing() }
 
-    // Map: FileName -> (ScopeFqName -> Set<Name[String] | LookupInfo>)
+    // Map: FileName -> (ScopeFqName -> Set<Pair<Name[String], LookupKind> | LookupInfo>)
     private val lookups = Object2ObjectOpenHashMap<String, MutableMap<String, MutableSet<Any>>>()
     private val interner = createStringInterner()
 
     override val requiresPosition: Boolean = profiler.withMeasure(this) { facade.lookupTracker_requiresPosition() }
 
-    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String) {
+    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String, kind: LookupKind) {
         if (isDoNothing) return
 
         val internedSymbolFqName = interner.intern(scopeFqName)
@@ -48,9 +46,9 @@ class RemoteLookupTrackerClient(
 
         val objectToPut: Any =
             if (requiresPosition)
-                LookupInfo(filePath, position, scopeFqName, scopeKind, name)
+                LookupInfo(filePath, position, scopeFqName, scopeKind, name, kind)
             else
-                internedName
+                internedName to kind
         lookups.getOrPut(filePath, ::Object2ObjectOpenHashMap).getOrPut(internedSymbolFqName, ::ObjectOpenHashSet).add(objectToPut)
     }
 
@@ -62,6 +60,7 @@ class RemoteLookupTrackerClient(
         eventManager.onCompilationFinished { flush() }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun flush() {
         if (isDoNothing || lookups.isEmpty()) return
 
@@ -69,14 +68,17 @@ class RemoteLookupTrackerClient(
             facade.lookupTracker_record(
                 lookups.flatMap { (filePath, lookupsByFile) ->
                     lookupsByFile.flatMap { (scopeFqName, lookupsByScopeFqName) ->
-                        lookupsByScopeFqName.map { lookupInfoOrString ->
+                        lookupsByScopeFqName.map { lookupInfoOrNameWithKind ->
                             if (requiresPosition)
-                                lookupInfoOrString as LookupInfo
-                            else
+                                lookupInfoOrNameWithKind as LookupInfo
+                            else {
+                                val (name, kind) = lookupInfoOrNameWithKind as Pair<String, LookupKind>
                                 LookupInfo(
                                     filePath, Position.NO_POSITION, scopeFqName, ScopeKind.CLASSIFIER,
-                                    lookupInfoOrString as String
+                                    name,
+                                    kind
                                 )
+                            }
                         }
                     }
                 }

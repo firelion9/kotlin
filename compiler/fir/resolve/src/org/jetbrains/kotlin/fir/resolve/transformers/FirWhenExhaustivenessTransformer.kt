@@ -114,7 +114,7 @@ class FirWhenExhaustivenessTransformer(private val bodyResolveComponents: BodyRe
             bodyResolveComponents.file.sourceFile?.path,
             subjectType
         )
-        bodyResolveComponents.session.lookupTracker?.recordTypeResolveAsLookup(subjectType, whenExpression.source, bodyResolveComponents.file.source, isTypeLookup = false)
+        bodyResolveComponents.session.lookupTracker?.recordTypeExhaustivenessResolveAsLookup(subjectType, whenExpression.source, bodyResolveComponents.file.source)
         return whenExpression
     }
 

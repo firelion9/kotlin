@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.incremental
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.kotlin.build.report.ICReporter
 import org.jetbrains.kotlin.build.report.info
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.name.FqName
 import java.io.File
 import java.io.IOException
@@ -120,7 +121,8 @@ data class BuildDiffsStorage(val buildDiffs: List<BuildDifference>) {
             repeat(lookupSymbolSize) {
                 val name = readUTF()
                 val scope = readUTF()
-                lookupSymbols.add(LookupSymbol(name = name, scope = scope))
+                val kind = LookupKind.byDescriptorOrError(readInt())
+                lookupSymbols.add(LookupSymbol(name = name, scope = scope, kind = kind))
             }
             return lookupSymbols
         }
@@ -139,15 +141,16 @@ data class BuildDiffsStorage(val buildDiffs: List<BuildDifference>) {
 
         fun ObjectOutputStream.writeLookups(lookupSymbols: Collection<LookupSymbol>) {
             writeInt(lookupSymbols.size)
-            for ((name, scope) in lookupSymbols) {
+            for ((name, scope, kind) in lookupSymbols) {
                 writeUTF(name)
                 writeUTF(scope)
+                writeInt(kind.descriptor)
             }
         }
 
         internal const val MAX_DIFFS_ENTRIES: Int = 10
 
         @set:TestOnly
-        var CURRENT_VERSION: Int = 0
+        var CURRENT_VERSION: Int = 1
     }
 }

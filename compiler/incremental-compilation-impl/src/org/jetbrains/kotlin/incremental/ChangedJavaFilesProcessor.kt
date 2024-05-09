@@ -22,6 +22,7 @@ import com.intellij.psi.PsiJavaFile
 import org.jetbrains.kotlin.build.report.ICReporter
 import org.jetbrains.kotlin.build.report.info
 import org.jetbrains.kotlin.build.report.metrics.BuildAttribute
+import org.jetbrains.kotlin.name.LookupKind
 import java.io.File
 import java.util.*
 
@@ -62,9 +63,13 @@ internal class ChangedJavaFilesProcessor(
     private fun PsiClass.addLookupSymbols(symbols: MutableSet<LookupSymbol>) {
         val fqn = qualifiedName.orEmpty()
 
-        symbols.add(LookupSymbol(name.orEmpty(), if (fqn == name) "" else fqn.removeSuffix("." + name!!)))
-        methods.forEach { symbols.add(LookupSymbol(it.name, fqn)) }
-        fields.forEach { symbols.add(LookupSymbol(it.name.orEmpty(), fqn)) }
+        val scope = if (fqn == name) "" else fqn.removeSuffix("." + name!!)
+        symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.NAME))
+        symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.TYPE))
+//        TODO: EXHAUSTIVENESS dirtiness detection. Probably may be skipped if the class is neither enum nor sealed
+//        symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.EXHAUSTIVENESS))
+        methods.forEach { symbols.add(LookupSymbol(it.name, fqn, LookupKind.NAME)) }
+        fields.forEach { symbols.add(LookupSymbol(it.name.orEmpty(), fqn, LookupKind.NAME)) }
         innerClasses.forEach { it.addLookupSymbols(symbols) }
     }
 }

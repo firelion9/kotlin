@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.incremental
 
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.name.FqName
 import org.junit.After
 import org.junit.Assert
@@ -42,12 +43,12 @@ class BuildDiffsStorageTest {
 
     @Test
     fun testToString() {
-        val lookupSymbols = listOf(LookupSymbol("foo", "bar"))
+        val lookupSymbols = listOf(LookupSymbol("foo", "bar", LookupKind.NAME))
         val fqNames = listOf(FqName("fizz.Buzz"))
         val diff = BuildDifference(100, true, DirtyData(lookupSymbols, fqNames))
         val diffs = BuildDiffsStorage(listOf(diff))
         Assert.assertEquals(
-            "BuildDiffsStorage(buildDiffs=[BuildDifference(ts=100, isIncremental=true, dirtyData=DirtyData(dirtyLookupSymbols=[LookupSymbol(name=foo, scope=bar)], dirtyClassesFqNames=[fizz.Buzz], dirtyClassesFqNamesForceRecompile=[]))])",
+            "BuildDiffsStorage(buildDiffs=[BuildDifference(ts=100, isIncremental=true, dirtyData=DirtyData(dirtyLookupSymbols=[LookupSymbol(name=foo, scope=bar, kind=NAME)], dirtyClassesFqNames=[fizz.Buzz], dirtyClassesFqNamesForceRecompile=[]))])",
             diffs.toString()
         )
     }
@@ -97,7 +98,7 @@ class BuildDiffsStorageTest {
 
     private fun getRandomDiff(): BuildDifference {
         val ts = random.nextLong()
-        val lookupSymbols = listOf(LookupSymbol("foo", "bar"))
+        val lookupSymbols = listOf(LookupSymbol("foo", "bar", LookupKind.NAME))
         val fqNames = listOf(FqName("fizz.Buzz"))
         return BuildDifference(ts, true, DirtyData(lookupSymbols, fqNames))
     }

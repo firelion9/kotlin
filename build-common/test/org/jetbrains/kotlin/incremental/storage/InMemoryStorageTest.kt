@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.incremental.storage
 
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.IncrementalCompilationFeatures
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.runWithin
 import org.jetbrains.kotlin.incremental.testingUtils.assertEqualDirectories
 import org.junit.jupiter.api.Assertions.*
@@ -24,7 +25,7 @@ class InMemoryStorageTest {
     fun testNoStorageIsCreatedOnFail() {
         val storageRoot = workingDir.resolve("storage")
         withLookupMapInTransaction(storageRoot, useInMemoryWrapper = true, successful = false) {
-            val key = LookupSymbolKey("a", "a")
+            val key = LookupSymbolKey("a", "a", LookupKind.NAME)
             it[key] = setOf(1, 2)
             it.append(key, setOf(3))
         }
@@ -34,7 +35,7 @@ class InMemoryStorageTest {
     @Test
     fun testStorageIsProperlyCreatedOnSuccess() {
         val storageRoot = workingDir.resolve("storage")
-        val key = LookupSymbolKey("a", "a")
+        val key = LookupSymbolKey("a", "a", LookupKind.NAME)
         withLookupMapInTransaction(storageRoot, useInMemoryWrapper = true, successful = true) {
             it[key] = setOf(1, 2)
             it.append(key, setOf(3))
@@ -59,11 +60,11 @@ class InMemoryStorageTest {
     @Test
     fun testExistingStorageIsProperlyModifiedOnSuccess() {
         val storageRoot = workingDir.resolve("storage")
-        val key1 = LookupSymbolKey("a", "a")
-        val key2 = LookupSymbolKey("b", "b")
-        val key3 = LookupSymbolKey("c", "c")
-        val key4 = LookupSymbolKey("d", "d")
-        val key5 = LookupSymbolKey("e", "e")
+        val key1 = LookupSymbolKey("a", "a", LookupKind.NAME)
+        val key2 = LookupSymbolKey("b", "b", LookupKind.NAME)
+        val key3 = LookupSymbolKey("c", "c", LookupKind.NAME)
+        val key4 = LookupSymbolKey("d", "d", LookupKind.NAME)
+        val key5 = LookupSymbolKey("e", "e", LookupKind.NAME)
         withLookupMapInTransaction(storageRoot, useInMemoryWrapper = false, successful = true) {
             it[key1] = setOf(1, 2)
             it[key2] = setOf(1, 2)
@@ -99,9 +100,9 @@ class InMemoryStorageTest {
     @Test
     fun testExistingStorageIsNotModifiedOnFail() {
         val storageRoot = workingDir.resolve("storage")
-        val key1 = LookupSymbolKey("a", "a")
-        val key2 = LookupSymbolKey("b", "b")
-        val key3 = LookupSymbolKey("c", "c")
+        val key1 = LookupSymbolKey("a", "a", LookupKind.NAME)
+        val key2 = LookupSymbolKey("b", "b", LookupKind.NAME)
+        val key3 = LookupSymbolKey("c", "c", LookupKind.NAME)
         withLookupMapInTransaction(storageRoot, useInMemoryWrapper = false, successful = true) {
             it[key1] = setOf(1, 2)
             it[key2] = setOf(1, 2)

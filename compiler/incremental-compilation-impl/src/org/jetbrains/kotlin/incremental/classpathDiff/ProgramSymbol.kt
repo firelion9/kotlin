@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.incremental.classpathDiff
 
 import org.jetbrains.kotlin.incremental.ChangesEither
 import org.jetbrains.kotlin.incremental.LookupSymbol
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 
@@ -120,10 +121,10 @@ class LookupSymbolSet(lookupSymbols: Iterable<LookupSymbol>) {
 internal fun ProgramSymbol.toLookupSymbol(): LookupSymbol {
     return when (this) {
         is ClassSymbol -> classId.asSingleFqName().let {
-            LookupSymbol(name = it.shortName().asString(), scope = it.parent().asString())
+            LookupSymbol(name = it.shortName().asString(), scope = it.parent().asString(), kind = LookupKind.NAME)
         }
-        is ClassMember -> LookupSymbol(name = memberName, scope = classId.asSingleFqName().asString())
-        is PackageMember -> LookupSymbol(name = memberName, scope = packageFqName.asString())
+        is ClassMember -> LookupSymbol(name = memberName, scope = classId.asSingleFqName().asString(), kind = LookupKind.NAME)
+        is PackageMember -> LookupSymbol(name = memberName, scope = packageFqName.asString(), kind = LookupKind.NAME)
     }
 }
 

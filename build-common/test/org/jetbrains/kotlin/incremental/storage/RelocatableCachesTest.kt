@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.TestWithWorkingDir
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.LookupStorage
 import org.jetbrains.kotlin.incremental.LookupSymbol
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.incremental.testingUtils.assertEqualDirectories
 import org.junit.Test
 import java.io.File
@@ -59,7 +60,7 @@ class RelocatableCachesTest : TestWithWorkingDir() {
         val lookups = MultiMap.createOrderedSet<LookupSymbol, String>()
 
         for (i in 0..10) {
-            val newSymbol = LookupSymbol(name = "MyClass_$i", scope = "myscope_$i")
+            val newSymbol = LookupSymbol(name = "MyClass_$i", scope = "myscope_$i", kind = LookupKind.NAME)
             val newSourcePath = projectRoot.resolve("src/${newSymbol.asRelativePath()}").canonicalFile.invariantSeparatorsPath
             symbols.add(newSymbol)
 

@@ -7,10 +7,8 @@ package org.jetbrains.kotlin.incremental.utils
 
 import com.intellij.util.containers.Interner
 import org.jetbrains.kotlin.incremental.LookupSymbol
-import org.jetbrains.kotlin.incremental.components.LookupInfo
-import org.jetbrains.kotlin.incremental.components.LookupTracker
-import org.jetbrains.kotlin.incremental.components.Position
-import org.jetbrains.kotlin.incremental.components.ScopeKind
+import org.jetbrains.kotlin.incremental.components.*
+import org.jetbrains.kotlin.name.LookupKind
 
 class TestLookupTracker(val savedLookups: MutableSet<LookupSymbol> = mutableSetOf()) : LookupTracker {
     val lookups = arrayListOf<LookupInfo>()
@@ -19,12 +17,12 @@ class TestLookupTracker(val savedLookups: MutableSet<LookupSymbol> = mutableSetO
     override val requiresPosition: Boolean
         get() = true
 
-    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String) {
+    override fun record(filePath: String, position: Position, scopeFqName: String, scopeKind: ScopeKind, name: String, kind: LookupKind) {
         val internedFilePath = interner.intern(filePath)
         val internedScopeFqName = interner.intern(scopeFqName)
         val internedName = interner.intern(name)
 
-        lookups.add(LookupInfo(internedFilePath, position, internedScopeFqName, scopeKind, internedName))
+        lookups.add(LookupInfo(internedFilePath, position, internedScopeFqName, scopeKind, internedName, kind))
     }
 
     override fun clear() {

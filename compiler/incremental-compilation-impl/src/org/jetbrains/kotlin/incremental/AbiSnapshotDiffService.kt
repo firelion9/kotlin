@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.incremental
 
 import org.jetbrains.kotlin.incremental.DifferenceCalculatorForClass.Companion.getNonPrivateMembers
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.metadata.ProtoBuf.Visibility.PRIVATE
 import org.jetbrains.kotlin.metadata.deserialization.Flags
 import org.jetbrains.kotlin.name.FqName
@@ -54,7 +55,8 @@ class AbiSnapshotDiffService() {
 
                             val scope = fqName.parent().asString()
                             val name = fqName.shortName().identifier
-                            dirtyLookupSymbols.add(LookupSymbol(name, scope))
+                            // TODO: use appropriate LookupKind's instead of NAME
+                            dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.NAME))
                         }
                         for (member in diff.changedMembersNames) {
                             //TODO(valtman) mark dirty symbols for subclasses
@@ -62,15 +64,15 @@ class AbiSnapshotDiffService() {
                             dirtyFqNames.addAll(subtypeFqNames)
 
                             for (subtypeFqName in subtypeFqNames) {
-                                dirtyLookupSymbols.add(LookupSymbol(member, subtypeFqName.asString()))
-                                dirtyLookupSymbols.add(LookupSymbol(SAM_LOOKUP_NAME.asString(), subtypeFqName.asString()))
+                                dirtyLookupSymbols.add(LookupSymbol(member, subtypeFqName.asString(), LookupKind.NAME))
+                                dirtyLookupSymbols.add(LookupSymbol(SAM_LOOKUP_NAME.asString(), subtypeFqName.asString(), LookupKind.NAME))
                             }
                         }
 
                     } else if (protoData is PackagePartProtoData && newProtoData is PackagePartProtoData) {
                         val diff = DifferenceCalculatorForPackageFacade(protoData, newProtoData).difference()
                         for (member in diff.changedMembersNames) {
-                            dirtyLookupSymbols.add(LookupSymbol(member, fqName.asString()))
+                            dirtyLookupSymbols.add(LookupSymbol(member, fqName.asString(), LookupKind.NAME))
                         }
                     } else {
                         //TODO(valtman) is it a valid case
@@ -98,12 +100,12 @@ class AbiSnapshotDiffService() {
             when (protoData) {
                 is ClassProtoData -> {
                     fqNames.add(fqName)
-                    symbols.addAll(protoData.getNonPrivateMembers().map { LookupSymbol(it, fqName.asString()) })
+                    symbols.addAll(protoData.getNonPrivateMembers().map { LookupSymbol(it, fqName.asString(), LookupKind.NAME) })
                 }
                 is PackagePartProtoData -> {
                     symbols.addAll(
                         protoData.proto.functionOrBuilderList.filterNot { Flags.VISIBILITY.get(it.flags) == PRIVATE }
-                            .map { LookupSymbol(protoData.nameResolver.getString(it.name), fqName.asString()) }.toSet()
+                            .map { LookupSymbol(protoData.nameResolver.getString(it.name), fqName.asString(), LookupKind.NAME) }.toSet()
                     )
 
                 }

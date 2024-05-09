@@ -20,6 +20,7 @@ import com.intellij.util.containers.hash.EqualityPolicy
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.IOUtil
 import com.intellij.util.io.KeyDescriptor
+import org.jetbrains.kotlin.name.LookupKind
 import org.jetbrains.kotlin.inline.InlineFunction
 import org.jetbrains.kotlin.inline.InlineFunctionOrAccessor
 import org.jetbrains.kotlin.inline.InlinePropertyAccessor
@@ -56,11 +57,13 @@ class LookupSymbolKeyDescriptor(
         return if (storeFullFqNames) {
             val name = input.readUTF()
             val scope = input.readUTF()
-            LookupSymbolKey(name.hashCode(), scope.hashCode(), name, scope)
+            val kind = LookupKind.byDescriptorOrError(input.readInt())
+            LookupSymbolKey(name.hashCode(), scope.hashCode(), name, scope, kind)
         } else {
             val nameHash = input.readInt()
             val scopeHash = input.readInt()
-            LookupSymbolKey(nameHash, scopeHash, "", "")
+            val kind = LookupKind.byDescriptorOrError(input.readInt())
+            LookupSymbolKey(nameHash, scopeHash, "", "", kind)
         }
     }
 
@@ -71,9 +74,11 @@ class LookupSymbolKeyDescriptor(
         if (storeFullFqNames) {
             output.writeUTF(value.name)
             output.writeUTF(value.scope)
+            output.writeInt(value.kind.descriptor)
         } else {
             output.writeInt(value.nameHash)
             output.writeInt(value.scopeHash)
+            output.writeInt(value.kind.descriptor)
         }
     }
 }
