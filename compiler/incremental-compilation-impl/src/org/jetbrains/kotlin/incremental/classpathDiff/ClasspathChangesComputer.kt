@@ -262,7 +262,12 @@ object ClasspathChangesComputer {
                 && currentClassSnapshotExcludingMember != previousClassSnapshotExcludingMembers
             ) {
                 // `areSubclassesAffected = false` as we don't need to compute impacted symbols at this step
-                changesCollector.collectSignature(fqName = classId.asSingleFqName(), areSubclassesAffected = false, isTypeAffected = true)
+                changesCollector.collectSignature(
+                    fqName = classId.asSingleFqName(),
+                    areSubclassesAffected = false,
+                    isTypeAffected = false,
+                    isExhaustivenessAffected = false
+                )
             }
         }
 

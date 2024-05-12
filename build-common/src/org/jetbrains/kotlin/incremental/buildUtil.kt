@@ -192,6 +192,9 @@ fun List<ChangeInfo>.getChangedAndImpactedSymbols(
                 if (change.isTypeAffected) {
                     dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.TYPE))
                 }
+                if (change.isExhaustivenessAffected) {
+                    dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.EXHAUSTIVENESS))
+                }
                 dirtyLookupSymbols.add(LookupSymbol(name, scope, LookupKind.NAME))
             }
         } else if (change is ChangeInfo.MembersChanged) {

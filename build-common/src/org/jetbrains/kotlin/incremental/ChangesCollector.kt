@@ -28,8 +28,7 @@ class ChangesCollector {
     private val removedMembers = hashMapOf<FqName, MutableSet<String>>()
     private val changedParents = hashMapOf<FqName, MutableSet<FqName>>()
     private val changedMembers = hashMapOf<FqName, MutableSet<String>>()
-    private val areSubclassesAffected = hashMapOf<FqName, Boolean>()
-    private val areTypesAffected = hashMapOf<FqName, Boolean>()
+    private val affectedComponents = hashMapOf<FqName, AffectedComponents>()
 
     //TODO for test only: ProtoData or ProtoBuf
     private val storage = hashMapOf<FqName, ProtoData>()
@@ -54,8 +53,15 @@ class ChangesCollector {
             }
         }
 
-        for ((fqName, areSubclassesAffected) in areSubclassesAffected) {
-            changes.add(ChangeInfo.SignatureChanged(fqName, areSubclassesAffected, areTypesAffected[fqName] == true))
+        for ((fqName, comps) in affectedComponents) {
+            changes.add(
+                ChangeInfo.SignatureChanged(
+                    fqName,
+                    comps.areSubclassesAffected,
+                    comps.isTypeAffected,
+                    comps.isExhaustivenessAffected
+                )
+            )
         }
 
         for ((fqName, changedParents) in changedParents) {
@@ -88,7 +94,12 @@ class ChangesCollector {
         }
     }
 
-    fun collectProtoChanges(oldData: ProtoData?, newData: ProtoData?, collectAllMembersForNewClass: Boolean = false, packageProtoKey: String? = null) {
+    fun collectProtoChanges(
+        oldData: ProtoData?,
+        newData: ProtoData?,
+        collectAllMembersForNewClass: Boolean = false,
+        packageProtoKey: String? = null,
+    ) {
         if (oldData == null && newData == null) {
             throw IllegalStateException("Old and new value are null")
         }
@@ -134,20 +145,20 @@ class ChangesCollector {
                         val fqName = oldData.nameResolver.getClassId(oldData.proto.fqName).asSingleFqName()
                         val diff = DifferenceCalculatorForClass(oldData, newData).difference()
                         if (diff.isClassAffected) {
-                            collectSignature(oldData, diff.areSubclassesAffected, diff.isTypeAffected)
+                            collectSignature(oldData, diff.areSubclassesAffected, diff.isTypeAffected, diff.isExhaustivenessAffected)
                         }
                         collectChangedMembers(fqName, diff.changedMembersNames)
                         addChangedParents(fqName, diff.changedSupertypes)
                     }
                     is PackagePartProtoData -> {
-                        collectSignature(oldData, areSubclassesAffected = true, isTypeAffected = false)
+                        collectSignature(oldData, areSubclassesAffected = true, isTypeAffected = true, isExhaustivenessAffected = true)
                     }
                 }
             }
             is PackagePartProtoData -> {
                 when (newData) {
                     is ClassProtoData -> {
-                        collectSignature(newData, areSubclassesAffected = false, isTypeAffected = false)
+                        collectSignature(newData, areSubclassesAffected = false, isTypeAffected = false, isExhaustivenessAffected = false)
                     }
                     is PackagePartProtoData -> {
                         val diff = DifferenceCalculatorForPackageFacade(oldData, newData).difference()
@@ -192,7 +203,7 @@ class ChangesCollector {
                 memberNames.forEach { this@ChangesCollector.collectChangedMember(classFqName, it) }
             }
 
-            collectSignature(classFqName, areSubclassesAffected = true, isTypeAffected = true)
+            collectSignature(classFqName, areSubclassesAffected = true, isTypeAffected = true, isExhaustivenessAffected = true)
         }
 
         if (isRemoved || isAdded) {
@@ -225,15 +236,44 @@ class ChangesCollector {
         }
     }
 
-    private fun collectSignature(classData: ClassProtoData, areSubclassesAffected: Boolean, isTypeAffected: Boolean) {
+    private fun collectSignature(classData: ClassProtoData, areSubclassesAffected: Boolean, isTypeAffected: Boolean, isExhaustivenessAffected: Boolean) {
         val fqName = classData.nameResolver.getClassId(classData.proto.fqName).asSingleFqName()
-        collectSignature(fqName, areSubclassesAffected, isTypeAffected)
+        collectSignature(fqName, areSubclassesAffected, isTypeAffected, isExhaustivenessAffected)
     }
 
-    fun collectSignature(fqName: FqName, areSubclassesAffected: Boolean, isTypeAffected: Boolean) {
-        val prevSubclassesValue = this.areSubclassesAffected[fqName] ?: false
-        val prevTypeValue = this.areTypesAffected[fqName] ?: false
-        this.areSubclassesAffected[fqName] = prevSubclassesValue || areSubclassesAffected
-        this.areTypesAffected[fqName] = prevTypeValue || isTypeAffected
+    fun collectSignature(fqName: FqName, areSubclassesAffected: Boolean, isTypeAffected: Boolean, isExhaustivenessAffected: Boolean) {
+        affectedComponents[fqName] = affectedComponents[fqName].with(areSubclassesAffected, isTypeAffected, isExhaustivenessAffected)
+    }
+
+    private data class AffectedComponents(
+        val areSubclassesAffected: Boolean = false,
+        val isTypeAffected: Boolean = false,
+        val isExhaustivenessAffected: Boolean = false,
+    ) {
+        fun with(
+            areSubclassesAffected: Boolean = false,
+            isTypeAffected: Boolean = false,
+            isExhaustivenessAffected: Boolean = false,
+        ) = copy(
+            areSubclassesAffected = this.areSubclassesAffected || areSubclassesAffected,
+            isTypeAffected = this.isTypeAffected || isTypeAffected,
+            isExhaustivenessAffected = this.isExhaustivenessAffected || isExhaustivenessAffected
+        )
+    }
+
+    companion object {
+        private fun AffectedComponents?.with(
+            areSubclassesAffected: Boolean = false,
+            isTypeAffected: Boolean = false,
+            isExhaustivenessAffected: Boolean = false,
+        ) = this?.with(
+            areSubclassesAffected = areSubclassesAffected,
+            isTypeAffected = isTypeAffected,
+            isExhaustivenessAffected = isExhaustivenessAffected
+        ) ?: AffectedComponents(
+            areSubclassesAffected = areSubclassesAffected,
+            isTypeAffected = isTypeAffected,
+            isExhaustivenessAffected = isExhaustivenessAffected
+        )
     }
 }

@@ -272,7 +272,14 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
         }
 
         val changesCollector = ChangesCollector()
-        removedClasses.forEach { changesCollector.collectSignature(FqName(it), areSubclassesAffected = true, isTypeAffected = true) }
+        removedClasses.forEach {
+            changesCollector.collectSignature(
+                FqName(it),
+                areSubclassesAffected = true,
+                isTypeAffected = true,
+                isExhaustivenessAffected = true
+            )
+        }
         val affectedByRemovedClasses = changesCollector.getDirtyFiles(incrementalCaches.values, kotlinContext.lookupStorageManager)
 
         fsOperations.markFilesForCurrentRound(affectedByRemovedClasses.dirtyFiles + affectedByRemovedClasses.forceRecompileTogether)

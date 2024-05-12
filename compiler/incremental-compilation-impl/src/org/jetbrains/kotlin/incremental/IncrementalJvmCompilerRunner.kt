@@ -286,7 +286,14 @@ open class IncrementalJvmCompilerRunner(
         val changes = mutableListOf<ChangeInfo>()
         classes.forEach { classId ->
             // It's important to set `areSubclassesAffected = true` and `isTypeAffected = true` when we don't know
-            changes.add(ChangeInfo.SignatureChanged(classId.asSingleFqName(), areSubclassesAffected = true, isTypeAffected = true))
+            changes.add(
+                ChangeInfo.SignatureChanged(
+                    classId.asSingleFqName(),
+                    areSubclassesAffected = true,
+                    isTypeAffected = true,
+                    isExhaustivenessAffected = true
+                )
+            )
         }
         classMembers.forEach { (classId, members) ->
             changes.add(ChangeInfo.MembersChanged(classId.asSingleFqName(), members))

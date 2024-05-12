@@ -112,7 +112,7 @@ fun FirLookupTrackerComponent.recordTypeConstructorResolveAsLookup(type: ConeKot
 }
 
 fun FirLookupTrackerComponent.recordTypeExhaustivenessResolveAsLookup(type: ConeKotlinType?, source: KtSourceElement?, fileSource: KtSourceElement?) {
-    recordTypeResolveAsLookup(type, source, fileSource, LookupKind.NAME) // TODO(firelion): implement EXHAUSTIVENESS dirtiness detection
+    recordTypeResolveAsLookup(type, source, fileSource, LookupKind.EXHAUSTIVENESS)
 }
 
 // TODO: review all places that record resolved type as lookup and consider minimize the number of them; see #KT-66366

@@ -36,6 +36,7 @@ data class Difference(
     val isClassAffected: Boolean = false,
     val areSubclassesAffected: Boolean = false,
     val isTypeAffected: Boolean = false,
+    val isExhaustivenessAffected: Boolean = false,
     val changedMembersNames: Set<String> = emptySet(),
     val changedSupertypes: Set<FqName> = emptySet()
 )
@@ -194,6 +195,7 @@ class DifferenceCalculatorForClass(
 
         var isClassAffected = false
         var isTypeAffected = false
+        var isExhaustivenessAffected = false
         var areSubclassesAffected = false
         val changedSupertypes = HashSet<FqName>()
         val names = hashSetOf<String>()
@@ -236,6 +238,7 @@ class DifferenceCalculatorForClass(
                     names.addAll(calcDifferenceForNonPrivateMembers(ProtoBuf.Class::getTypeAliasList))
                 ProtoBufClassKind.ENUM_ENTRY_LIST -> {
                     isClassAffected = true
+                    isExhaustivenessAffected = true
                     names.addAll(calcDifferenceForNonPrivateMembers(ProtoBuf.Class::getEnumEntryList))
                 }
                 ProtoBufClassKind.SEALED_SUBCLASS_FQ_NAME_LIST -> {
@@ -351,7 +354,14 @@ class DifferenceCalculatorForClass(
             }
         }
 
-        return Difference(isClassAffected, isTypeAffected, areSubclassesAffected, names, changedSupertypes)
+        return Difference(
+            isClassAffected = isClassAffected,
+            areSubclassesAffected = areSubclassesAffected,
+            isTypeAffected = isTypeAffected,
+            isExhaustivenessAffected = isExhaustivenessAffected,
+            changedMembersNames = names,
+            changedSupertypes = changedSupertypes
+        )
     }
 
     companion object {

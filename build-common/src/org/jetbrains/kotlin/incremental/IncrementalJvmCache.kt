@@ -163,7 +163,12 @@ open class IncrementalJvmCache(
                 // because we don't write proto for multifile facades.
                 // As a workaround we can remove proto values for multifile facades.
                 if (className in protoMap) {
-                    changesCollector.collectSignature(className.fqNameForClassNameWithoutDollars, areSubclassesAffected = true, isTypeAffected = true)
+                    changesCollector.collectSignature(
+                        className.fqNameForClassNameWithoutDollars,
+                        areSubclassesAffected = true,
+                        isTypeAffected = true,
+                        isExhaustivenessAffected = true
+                    )
                 }
                 protoMap.remove(className, changesCollector)
                 classFqNameToSourceMap.remove(className.fqNameForClassNameWithoutDollars)
@@ -629,7 +634,12 @@ sealed class ChangeInfo(val fqName: FqName) {
 
     class Removed(fqName: FqName, names: Collection<String>) : MembersChanged(fqName, names)
 
-    class SignatureChanged(fqName: FqName, val areSubclassesAffected: Boolean, val isTypeAffected: Boolean) : ChangeInfo(fqName)
+    class SignatureChanged(
+        fqName: FqName,
+        val areSubclassesAffected: Boolean,
+        val isTypeAffected: Boolean,
+        val isExhaustivenessAffected: Boolean,
+    ) : ChangeInfo(fqName)
 
     class ParentsChanged(fqName: FqName, val parentsChanged: Collection<FqName>) : ChangeInfo(fqName)
 

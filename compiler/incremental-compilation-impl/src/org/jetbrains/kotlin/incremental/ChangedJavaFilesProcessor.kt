@@ -67,7 +67,7 @@ internal class ChangedJavaFilesProcessor(
         symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.NAME))
         symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.TYPE))
 //        TODO: EXHAUSTIVENESS dirtiness detection. Probably may be skipped if the class is neither enum nor sealed
-//        symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.EXHAUSTIVENESS))
+        symbols.add(LookupSymbol(name.orEmpty(), scope, LookupKind.EXHAUSTIVENESS))
         methods.forEach { symbols.add(LookupSymbol(it.name, fqn, LookupKind.NAME)) }
         fields.forEach { symbols.add(LookupSymbol(it.name.orEmpty(), fqn, LookupKind.NAME)) }
         innerClasses.forEach { it.addLookupSymbols(symbols) }
