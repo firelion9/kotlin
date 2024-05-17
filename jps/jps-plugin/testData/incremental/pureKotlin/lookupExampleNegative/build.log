@@ -1,0 +1,13 @@
+================ Step #1 =================
+
+Cleaning output files:
+  out/production/module/META-INF/module.kotlin_module
+  out/production/module/Base.class
+  out/production/module/Derived.class
+End of files
+Compiling files:
+  src/Base.kt
+  src/Derived.kt
+End of files
+Exit code: OK
+------------------------------------------

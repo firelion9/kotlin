@@ -93,6 +93,7 @@ abstract class AbstractIncrementalCompilerRunnerTestBase<Args : CommonCompilerAr
         val sourceRoots = setupTest(testDir, srcDir, cacheDir, outDir)
         val args = createCompilerArgumentsImpl(outDir, testDir)
 
+        println("Initial build")
         val (initialExitCode, _, errors, initialCachesDump) = initialMake(cacheDir, outDir, sourceRoots, args)
         var lastExitCode = initialExitCode
         var lastCachesDump = initialCachesDump
@@ -122,6 +123,7 @@ abstract class AbstractIncrementalCompilerRunnerTestBase<Args : CommonCompilerAr
         val actualSBWithoutErrors = StringBuilder()
         var step = 1
         for ((modificationStep, buildLogStep) in modifications.zip(buildLogSteps)) {
+            println("\n\nIncremental step")
             modificationStep.forEach { it.perform(workingDir, mapWorkingToOriginalFile) }
             val (incrementalExitCode, compiledSources, compileErrors, incrementalCachesDump) = incrementalMake(
                 cacheDir,
@@ -164,6 +166,7 @@ abstract class AbstractIncrementalCompilerRunnerTestBase<Args : CommonCompilerAr
             }
         }
 
+        println("\n\nNon-incremental rebuild")
         rebuildAndCompareOutput(sourceRoots, testDir, buildLogSteps, outDir, lastExitCode, lastCachesDump)
     }
 

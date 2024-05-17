@@ -1,0 +1,1 @@
+fun useA(a: Any) = if (a is A) a.doStuff() else error("unlucky")

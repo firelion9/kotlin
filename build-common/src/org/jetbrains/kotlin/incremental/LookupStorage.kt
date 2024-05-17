@@ -269,6 +269,7 @@ class LookupTrackerImpl(private val delegate: LookupTracker) : LookupTracker {
 
         val lookupChanged = nameChanged || fqNameChanged || filePathChanged || kindChanged
         if (lookupChanged) {
+            println("Lookup ($kind) $scopeFqName#$name from $filePath")
             lookups.putValue(LookupSymbol(prevName, prevScopeFqName, kind), prevFilePath)
         }
         if (lookupChanged || prevPosition != position || prevScopeKind != scopeKind) {

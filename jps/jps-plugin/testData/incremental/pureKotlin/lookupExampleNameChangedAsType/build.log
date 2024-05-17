@@ -1,0 +1,16 @@
+================ Step #1 =================
+
+Cleaning output files:
+  out/production/module/META-INF/module.kotlin_module
+  out/production/module/A.class
+  out/production/module/UseAKt.class
+End of files
+Compiling files:
+  src/A.kt
+  src/useA.kt
+End of files
+Exit code: ABORT
+------------------------------------------
+COMPILATION FAILED
+Unresolved reference: doStuff
+

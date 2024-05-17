@@ -1,0 +1,15 @@
+================ Step #1 =================
+
+Cleaning output files:
+  out/production/module/META-INF/module.kotlin_module
+  out/production/module/Colors.class
+  out/production/module/ButtonKt.class
+  out/production/module/IconButtonKt.class
+End of files
+Compiling files:
+  src/Colors.kt
+  src/button.kt
+  src/iconButton.kt
+End of files
+Exit code: OK
+------------------------------------------
