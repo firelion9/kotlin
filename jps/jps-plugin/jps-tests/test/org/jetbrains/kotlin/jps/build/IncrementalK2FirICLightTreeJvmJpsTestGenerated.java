@@ -357,6 +357,26 @@ public class IncrementalK2FirICLightTreeJvmJpsTestGenerated extends AbstractIncr
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/localClassChanged/");
     }
 
+    @TestMetadata("lookupExampleConstructorTouched")
+    public void testLookupExampleConstructorTouched() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/lookupExampleConstructorTouched/");
+    }
+
+    @TestMetadata("lookupExampleMoreComplexTypeUsage")
+    public void testLookupExampleMoreComplexTypeUsage() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/lookupExampleMoreComplexTypeUsage/");
+    }
+
+    @TestMetadata("lookupExampleNameChangedAsType")
+    public void testLookupExampleNameChangedAsType() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/lookupExampleNameChangedAsType/");
+    }
+
+    @TestMetadata("lookupExampleNegative")
+    public void testLookupExampleNegative() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/lookupExampleNegative/");
+    }
+
     @TestMetadata("moveClass")
     public void testMoveClass() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/moveClass/");
