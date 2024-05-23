@@ -557,6 +557,11 @@ public class IncrementalK2JvmJpsTestGenerated extends AbstractIncrementalK2JvmJp
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/publicPropertyWithPrivateSetter/");
     }
 
+    @TestMetadata("reflectionOnChangedClass")
+    public void testReflectionOnChangedClass() {
+      runTest("jps/jps-plugin/testData/incremental/pureKotlin/reflectionOnChangedClass/");
+    }
+
     @TestMetadata("removeAndRestoreCompanion")
     public void testRemoveAndRestoreCompanion() {
       runTest("jps/jps-plugin/testData/incremental/pureKotlin/removeAndRestoreCompanion/");

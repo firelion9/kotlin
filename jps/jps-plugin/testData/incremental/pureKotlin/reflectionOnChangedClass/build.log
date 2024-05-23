@@ -1,0 +1,20 @@
+================ Step #1 =================
+
+Compiling files:
+  src/A.kt
+  src/createAReflective.kt
+  src/useAPropertyReflective.kt
+  src/useAStaticPropertyReflective.kt
+End of files
+Exit code: OK
+
+================ Step #2 =================
+
+Compiling files:
+  src/A.kt
+  src/createAReflective.kt
+  src/useAPropertyReflective.kt
+  src/useAStaticPropertyReflective.kt
+End of files
+Exit code: OK
+
