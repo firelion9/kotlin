@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.TestWithWorkingDir
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.LookupStorage
 import org.jetbrains.kotlin.incremental.LookupSymbol
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.incremental.testingUtils.assertEqualDirectories
 import org.junit.Test
 import java.io.File

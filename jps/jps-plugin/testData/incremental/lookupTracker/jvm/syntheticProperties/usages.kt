@@ -3,7 +3,7 @@ package foo.bar
 /*p:<root>(JavaClass)*/import JavaClass
 /*p:foo(KotlinClass)*/import foo.KotlinClass
 
-/*p:foo.bar*/fun test() {
+fun test() {
     val j = /*p:<root>*/JavaClass()
     val k = /*p:foo*/KotlinClass()
 

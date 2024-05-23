@@ -7,7 +7,6 @@ End of files
 After chunkBuildStarted. Marked as dirty by Kotlin:
   src/useA.kt
 Cleaning output files:
-  out/production/module/FunAKt.class
   out/production/module/UseAKt.class
 End of files
 Compiling files:

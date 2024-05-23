@@ -20,7 +20,7 @@ import com.intellij.util.containers.hash.EqualityPolicy
 import com.intellij.util.io.DataExternalizer
 import com.intellij.util.io.IOUtil
 import com.intellij.util.io.KeyDescriptor
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.inline.InlineFunction
 import org.jetbrains.kotlin.inline.InlineFunctionOrAccessor
 import org.jetbrains.kotlin.inline.InlinePropertyAccessor

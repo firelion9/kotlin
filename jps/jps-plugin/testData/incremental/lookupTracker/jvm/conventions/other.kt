@@ -1,6 +1,6 @@
 package foo.bar
 
-/*p:foo.bar*/fun testOther(a: /*p:foo.bar*/A, b: /*p:foo.bar*/Int, c: /*p:foo.bar*/Any, na: /*p:foo.bar*/A?) {
+fun testOther(a: /*p:foo.bar*/A, b: /*p:foo.bar*/Int, c: /*p:foo.bar*/Any, na: /*p:foo.bar*/A?) {
     /*p:foo.bar(A) p:foo.bar(set) p:foo.bar.A(set)*/a[1] = /*p:foo.bar(A) p:foo.bar.A(get)*/a[2]
 
     /*p:foo.bar.A(contains)*/b in /*p:foo.bar(A)*/a

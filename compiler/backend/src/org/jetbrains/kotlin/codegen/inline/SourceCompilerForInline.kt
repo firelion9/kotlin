@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.incremental.components.LocationInfo
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.incremental.components.Position
 import org.jetbrains.kotlin.incremental.components.ScopeKind
 import org.jetbrains.kotlin.name.ClassId

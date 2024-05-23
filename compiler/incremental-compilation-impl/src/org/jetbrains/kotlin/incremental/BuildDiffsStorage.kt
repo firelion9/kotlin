@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.incremental
 import org.jetbrains.annotations.TestOnly
 import org.jetbrains.kotlin.build.report.ICReporter
 import org.jetbrains.kotlin.build.report.info
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.name.FqName
 import java.io.File
 import java.io.IOException

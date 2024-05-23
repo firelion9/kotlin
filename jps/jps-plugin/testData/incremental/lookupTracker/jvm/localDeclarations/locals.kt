@@ -2,7 +2,7 @@ package local.declarations
 
 import bar.*
 
-/*p:local.declarations*/fun f(p: /*p:bar p:local.declarations*/Any) {
+fun f(p: /*p:bar p:local.declarations*/Any) {
     /*p:kotlin.Any(toString)*/p.toString()
 
     val a = 1

@@ -3,7 +3,7 @@ package foo
 /*p:bar(C)*/import bar.C
 import baz.*
 
-/*p:foo*/fun usages() {
+fun usages() {
     val c = /*p:bar*/C()
 
     /*p:bar(C) p:bar.C(field)*/c.field

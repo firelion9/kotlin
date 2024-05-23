@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.incremental.utils
 import com.intellij.util.containers.Interner
 import org.jetbrains.kotlin.incremental.LookupSymbol
 import org.jetbrains.kotlin.incremental.components.*
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 
 class TestLookupTracker(val savedLookups: MutableSet<LookupSymbol> = mutableSetOf()) : LookupTracker {
     val lookups = arrayListOf<LookupInfo>()

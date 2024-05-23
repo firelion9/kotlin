@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.incremental.storage
 
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.IncrementalCompilationFeatures
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.incremental.runWithin
 import org.jetbrains.kotlin.incremental.testingUtils.assertEqualDirectories
 import org.junit.jupiter.api.Assertions.*

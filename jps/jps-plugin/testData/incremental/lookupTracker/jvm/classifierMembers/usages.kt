@@ -2,7 +2,7 @@ package foo
 
 import bar.*
 
-/*p:foo*/fun usages(i: /*p:bar p:foo*/I) {
+fun usages(i: /*p:bar p:foo*/I) {
     /*p:foo p:foo.A(a)*/A().a
     /*p:foo p:foo.A(b)*/A().b
     /*p:foo p:foo.A(c)*/A().c
@@ -36,7 +36,7 @@ import bar.*
     /*p:bar p:foo p:foo.E(valueOf)*/E.valueOf("")
 }
 
-/*p:foo*/fun classifiers(
+fun classifiers(
         a: /*p:bar p:foo*/A,
         ab: /*p:bar p:bar.A(B) p:foo p:foo.A(B)*/A.B,
         ac: /*p:bar p:bar.A(C) p:foo p:foo.A(C)*/A.C,

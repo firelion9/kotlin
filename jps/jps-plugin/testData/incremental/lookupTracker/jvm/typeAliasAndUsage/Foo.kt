@@ -1,6 +1,6 @@
 
 package top
 
-/*p:top*/class Foo {
+class Foo {
     val prop = 42
 }

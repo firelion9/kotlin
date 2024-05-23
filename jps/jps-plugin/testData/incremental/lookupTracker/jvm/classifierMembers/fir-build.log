@@ -1,6 +1,6 @@
 ==== INITIAL BUILD ====
 Compiling files:
-  src/bar.kt
+  src/bar.kt(no lookups)
   src/constraints.kt
   src/foo.kt
   src/usages.kt

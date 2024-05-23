@@ -2,7 +2,7 @@ package foo
 /*p:bar(C)*/import bar.C
 /*p:bar(SAMInterface)*/import bar.SAMInterface
 
-/*p:foo*/fun foo(c: /*p:bar p:foo*/C) {
+fun foo(c: /*p:bar p:foo*/C) {
     /*p:bar(C) p:bar.C(foo) p:foo(foo)*/c.foo()
     /*p:bar(C) p:bar(SAMInterface) p:bar.C(foo) p:bar.SAMInterface(<SAM-CONSTRUCTOR>)*/c.foo /*p:kotlin(Function1)*/{  }
 

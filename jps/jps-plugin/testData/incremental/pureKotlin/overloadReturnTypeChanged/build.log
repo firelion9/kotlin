@@ -3,10 +3,21 @@
 Cleaning output files:
   out/production/module/META-INF/module.kotlin_module
   out/production/module/test/Fun1Kt.class
-  out/production/module/test/Fun2Kt.class
 End of files
 Compiling files:
   src/fun1.kt
+End of files
+After build round. Marked as dirty by Kotlin:
+  src/fun2.kt
+  src/usage.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Cleaning output files:
+  out/production/module/META-INF/module.kotlin_module
+  out/production/module/test/Fun2Kt.class
+  out/production/module/test/UsageKt.class
+End of files
+Compiling files:
   src/fun2.kt
   src/usage.kt
 End of files

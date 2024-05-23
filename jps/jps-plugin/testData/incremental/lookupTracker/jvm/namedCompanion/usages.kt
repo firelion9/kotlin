@@ -1,23 +1,23 @@
-/*p:<root>*/fun Explicit() {
+fun Explicit() {
     /*p:<root> p:MainClass(Name)*/MainClass./*p:MainClass*/Name
 }
 
-/*p:<root>*/fun ExplicitMethod() {
+fun ExplicitMethod() {
     /*p:<root> p:<root>(f) p:MainClass(Name) p:MainClass.Name(f)*/MainClass./*p:MainClass*/Name.f()
 }
 
-/*p:<root>*/fun Implicit() {
+fun Implicit() {
     /*p:<root> p:MainClass(Name)*/MainClass
 }
 
-/*p:<root>*/fun ImplicitMethod() {
+fun ImplicitMethod() {
     /*p:<root> p:<root>(f) p:MainClass(Name) p:MainClass(f) p:MainClass.Name(f)*/MainClass.f()
 }
 
-/*p:<root>*/fun InstanceExplicit() {
+fun InstanceExplicit() {
     val t = /*p:<root> p:MainClass(Name)*/MainClass./*p:MainClass*/Name
 }
 
-/*p:<root>*/fun Type(t: /*p:<root> p:MainClass(Name)*/MainClass.Name) {
+fun Type(t: /*p:<root> p:MainClass(Name)*/MainClass.Name) {
 
 }

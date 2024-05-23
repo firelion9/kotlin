@@ -1,3 +1,3 @@
 package foo
 
-/*p:foo*/class AChild : /*p:foo*/A()
+class AChild : /*p:foo*/A()

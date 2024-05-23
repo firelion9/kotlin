@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.build.joinToReadableString
 import org.jetbrains.kotlin.config.CompilerRunnerConstants.KOTLIN_COMPILER_NAME
 import org.jetbrains.kotlin.incremental.IncrementalCompilationContext
 import org.jetbrains.kotlin.incremental.LookupSymbol
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.incremental.storage.FileToPathConverter
 import org.jetbrains.kotlin.jps.KotlinJpsBundle
 import org.jetbrains.kotlin.jps.incremental.*

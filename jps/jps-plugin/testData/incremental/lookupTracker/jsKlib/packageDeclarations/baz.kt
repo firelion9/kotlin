@@ -1,7 +1,7 @@
 package baz
 
-/*p:baz*/class A
+class A
 
-/*p:baz*/class B
+class B
 
-/*p:baz*/class C
+class C

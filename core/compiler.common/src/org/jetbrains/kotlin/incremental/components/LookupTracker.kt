@@ -17,7 +17,6 @@
 package org.jetbrains.kotlin.incremental.components
 
 import org.jetbrains.kotlin.container.DefaultImplementation
-import org.jetbrains.kotlin.name.LookupKind
 import java.io.Serializable
 
 @DefaultImplementation(LookupTracker.DO_NOTHING::class)

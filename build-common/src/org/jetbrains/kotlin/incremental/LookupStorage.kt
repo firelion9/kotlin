@@ -19,7 +19,7 @@ package org.jetbrains.kotlin.incremental
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.containers.MultiMap
 import org.jetbrains.annotations.TestOnly
-import org.jetbrains.kotlin.name.LookupKind
+import org.jetbrains.kotlin.incremental.components.LookupKind
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.incremental.components.Position
 import org.jetbrains.kotlin.incremental.components.ScopeKind

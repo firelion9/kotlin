@@ -1,4 +1,4 @@
-/*p:<root>*/class MainClass {
+class MainClass {
     companion object {
         fun f() {
 

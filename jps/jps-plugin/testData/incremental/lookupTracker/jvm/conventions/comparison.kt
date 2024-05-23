@@ -1,6 +1,6 @@
 package foo.bar
 
-/*p:foo.bar*/fun testComparisons(a: /*p:foo.bar*/A, b: /*p:foo.bar*/Int, c: /*p:foo.bar*/Any, na: /*p:foo.bar*/A?) {
+fun testComparisons(a: /*p:foo.bar*/A, b: /*p:foo.bar*/Int, c: /*p:foo.bar*/Any, na: /*p:foo.bar*/A?) {
     /*p:foo.bar(A)*/a == c
     /*p:foo.bar(A)*/a != c
     /*p:foo.bar(A)*/na == /*p:foo.bar(A)*/a

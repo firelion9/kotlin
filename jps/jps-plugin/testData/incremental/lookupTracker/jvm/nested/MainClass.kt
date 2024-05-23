@@ -1,7 +1,7 @@
 
 package one
 
-/*p:one*/class MainClass {
+class MainClass {
     class NestedClass {
         object A {
             class B {

@@ -1,6 +1,6 @@
 package foo
 
-/*p:foo*/fun bar() {
+fun bar() {
     class A {
         inner class B
     }

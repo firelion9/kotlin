@@ -8,6 +8,7 @@ Compiling files:
   src/A.kt
 End of files
 After build round. Marked as dirty by Kotlin:
+  src/pass.kt
   src/use.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------

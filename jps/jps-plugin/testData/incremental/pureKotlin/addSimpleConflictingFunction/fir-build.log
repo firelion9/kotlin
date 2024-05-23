@@ -1,0 +1,10 @@
+================ Step #1 =================
+
+Compiling files:
+  src/fun2.kt
+End of files
+Exit code: ABORT
+------------------------------------------
+COMPILATION FAILED
+Conflicting overloads:
+fun foo(arg: Int): Boolean

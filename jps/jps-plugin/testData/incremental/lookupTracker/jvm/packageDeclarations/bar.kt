@@ -1,7 +1,7 @@
 package bar
 
-/*p:bar*/class A
+class A
 
-/*p:bar*/class B
+class B
 
-/*p:bar*/object O
+object O

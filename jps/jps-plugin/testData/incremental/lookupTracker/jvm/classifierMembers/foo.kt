@@ -2,7 +2,7 @@ package foo
 
 import bar.*
 
-/*p:foo*/class A {
+class A {
     val a = 1
     var b = ""
 
@@ -43,14 +43,14 @@ import bar.*
     }
 }
 
-/*p:foo*/interface I {
+interface I {
     var a: /*p:bar p:foo p:foo.I*/Int
     fun foo()
 
     class NI
 }
 
-/*p:foo*/object Obj : /*p:bar p:foo*/I {
+object Obj : /*p:bar p:foo*/I {
     override var a = 1
     override fun foo() {}
     val b = 1
